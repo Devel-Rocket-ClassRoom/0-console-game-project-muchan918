@@ -20,7 +20,7 @@ namespace Framework.Engine
         private static readonly int[] s_ansiFg = { 30, 34, 32, 36, 31, 35, 33, 37, 90, 94, 92, 96, 91, 95, 93, 97 };
         private static readonly int[] s_ansiBg = { 40, 44, 42, 46, 41, 45, 43, 47, 100, 104, 102, 106, 101, 105, 103, 107 };
 
-        public int Width => _width;
+        public int Width => _width / 2;
         public int Height => _height;
 
         [DllImport("kernel32.dll", SetLastError = true)]
@@ -34,12 +34,12 @@ namespace Framework.Engine
 
         public ScreenBuffer(int width, int height)
         {
-            _width = width;
+            _width = width * 2;
             _height = height;
-            _chars = new char[height, width];
-            _fgColors = new ConsoleColor[height, width];
-            _bgColors = new ConsoleColor[height, width];
-            _frameBuilder = new StringBuilder(width * height * 4);
+            _chars = new char[_height, _width];
+            _fgColors = new ConsoleColor[_height, _width];
+            _bgColors = new ConsoleColor[_height, _width];
+            _frameBuilder = new StringBuilder(_width * _height * 4);
             Clear();
             EnableVirtualTerminalProcessing();
         }
@@ -80,11 +80,12 @@ namespace Framework.Engine
         // 화면에 출력해주는 함수
         public void SetCell(int x, int y, char ch, ConsoleColor color = ConsoleColor.Gray, ConsoleColor bgColor = ConsoleColor.Black)
         {
-            if (x >= 0 && x < _width && y >= 0 && y < _height)
+            int px = 2 * x;
+            if (px >= 0 && px < _width && y >= 0 && y < _height)
             {
-                _chars[y, x] = ch;
-                _fgColors[y, x] = color;
-                _bgColors[y, x] = bgColor;
+                _chars[y, px] = ch;
+                _fgColors[y, px] = color;
+                _bgColors[y, px] = bgColor;
             }
         }
 
@@ -98,7 +99,7 @@ namespace Framework.Engine
 
         public void WriteTextCentered(int y, string text, ConsoleColor color = ConsoleColor.Gray, ConsoleColor bgColor = ConsoleColor.Black)
         {
-            int x = (_width - text.Length) / 2;
+            int x = (_width/2/2 - text.Length/2);
             WriteText(x, y, text, color, bgColor);
         }
 
