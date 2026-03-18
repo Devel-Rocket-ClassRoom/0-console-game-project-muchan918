@@ -111,7 +111,7 @@ namespace Framework.Engine
             }
         }
 
-        public void DrawHLine(int x, int y, int length, char ch = '-', ConsoleColor color = ConsoleColor.Gray, ConsoleColor bgColor = ConsoleColor.Black)
+        public void DrawHLine(int x, int y, int length, char ch = '─', ConsoleColor color = ConsoleColor.Gray, ConsoleColor bgColor = ConsoleColor.Black)
         {
             for (int i = 0; i < length; i++)
             {
@@ -134,8 +134,8 @@ namespace Framework.Engine
             SetCell(x, y + height - 1, '+', color, bgColor);
             SetCell(x + width - 1, y + height - 1, '+', color, bgColor);
 
-            DrawHLine(x + 1, y, width - 2, '-', color, bgColor);
-            DrawHLine(x + 1, y + height - 1, width - 2, '-', color, bgColor);
+            DrawHLine(x + 1, y, width - 2, '─', color, bgColor);
+            DrawHLine(x + 1, y + height - 1, width - 2, '─', color, bgColor);
             DrawVLine(x, y + 1, height - 2, '|', color, bgColor);
             DrawVLine(x + width - 1, y + 1, height - 2, '|', color, bgColor);
         }
