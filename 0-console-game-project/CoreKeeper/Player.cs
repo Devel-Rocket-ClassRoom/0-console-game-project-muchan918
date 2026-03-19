@@ -3,6 +3,7 @@ using Framework.Engine;
 
 public class Player : GameObject
 {
+    private Scene _scene;
     private float _moveTimer;
     private float _moveInterval = 0.1f;
     private (int X, int Y) _direction = (0, 0);
@@ -21,6 +22,7 @@ public class Player : GameObject
 
     public Player(Scene scene, Map map, int startX, int startY) : base(scene)
     {
+        _scene = scene;
         Name = "Player";
         _map = map;
         _headPosition = (startX, startY);
@@ -81,7 +83,9 @@ public class Player : GameObject
         _direction = (dx, dy);
 
         if (Input.IsKeyDown(ConsoleKey.Spacebar))
-            Mine();
+        {
+            Action();
+        }
     }
 
     public void Move()
@@ -99,16 +103,30 @@ public class Player : GameObject
         return;
     }
 
-    private void Mine()
+    private void Action()
     {
-        // 마지막 방향으로 1타일 앞 월드 좌표
         int targetX = _headPosition.X + _lastDirection.X;
         int targetY = _headPosition.Y + _lastDirection.Y;
 
         if (_map.IsMinable(targetX, targetY))
         {
-            TileType broken = _map.BreakTile(targetX, targetY);
-            // 나중에 broken 타입으로 아이템 드롭 처리
+            Mine(targetX, targetY);
         }
+
+    }
+
+    private void Mine(int worldX, int worldY)
+    {
+        TileType broken = _map.BreakTile(worldX, worldY);
+
+        Item? item = broken switch
+        {
+            TileType.Wood => new WoodItem(_scene, _map, worldX, worldY),
+            TileType.Soil => new SoilItem(_scene, _map, worldX, worldY),
+            _ => null
+        };
+
+        if (item != null)
+            _scene.AddGameObject(item);
     }
 }

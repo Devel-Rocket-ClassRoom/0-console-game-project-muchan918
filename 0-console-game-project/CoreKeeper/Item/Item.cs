@@ -1,10 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
+using Framework.Engine;
 
-namespace _0_console_game_project.CoreKeeper.Item
+// Item 추상 클래스
+public abstract class Item : GameObject
 {
-    internal class Item
-    {
-    }
+    public abstract string Name { get; set; }
+    public abstract ConsoleColor Color { get; }
+    public abstract void Use(Player player);
+
+    protected Item(Scene scene) : base(scene) { }
 }

@@ -1,11 +1,10 @@
 ﻿using System;
 using Framework.Engine;
 
-// WoodItem
-public class WoodItem : Item, IDroppable, IInventoryItem
+public class SoilItem : Item, IDroppable, IInventoryItem
 {
     public override string Name { get; set; } = "나무";
-    public override ConsoleColor Color => ConsoleColor.DarkYellow;
+    public override ConsoleColor Color => ConsoleColor.DarkGreen;
 
     // IDroppable
     public int WorldX { get; set; }
@@ -18,7 +17,7 @@ public class WoodItem : Item, IDroppable, IInventoryItem
 
     private readonly Map _map;
 
-    public WoodItem(Scene scene, Map map, int worldX, int worldY) : base(scene)
+    public SoilItem(Scene scene, Map map, int worldX, int worldY) : base(scene)
     {
         _map = map;
         WorldX = worldX;

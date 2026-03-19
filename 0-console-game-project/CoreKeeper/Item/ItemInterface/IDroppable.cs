@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace _0_console_game_project.CoreKeeper.Item.ItemInterface
+// 맵에 드롭될 수 있는 아이템
+public interface IDroppable
 {
-    internal interface IDroppable
-    {
-    }
+    int WorldX {  get; set; }
+    int WorldY { get; set; } 
+    void OnPickup(Player player);
 }

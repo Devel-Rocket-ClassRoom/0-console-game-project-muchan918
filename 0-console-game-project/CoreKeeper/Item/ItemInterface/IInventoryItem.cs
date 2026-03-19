@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace _0_console_game_project.CoreKeeper.Item.ItemInterface
+public interface IInventoryItem
 {
-    internal interface IInventoryItem
-    {
-    }
+    int Count { get; set; }
+    int MaxStack { get; }
 }
