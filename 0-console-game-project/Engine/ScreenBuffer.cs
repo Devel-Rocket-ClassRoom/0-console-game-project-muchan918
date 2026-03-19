@@ -8,19 +8,15 @@ namespace Framework.Engine
     {
         private readonly int _width;
         private readonly int _height;
-        
-        // 그리고 싶은 데이터
         private char[,] _chars;
-        private ConsoleColor[,] _fgColors; // 글자 색
-        private ConsoleColor[,] _bgColors; // 글자 배경 색
+        private ConsoleColor[,] _fgColors;
+        private ConsoleColor[,] _bgColors;
         private readonly StringBuilder _frameBuilder;
 
-        // 글자의 색상을 이스케이프 시퀀스를 통해 정해준다
-        // HTML에서 글자 bold하고 기울이고 하는 것처럼 쓰기 위해 선언
         private static readonly int[] s_ansiFg = { 30, 34, 32, 36, 31, 35, 33, 37, 90, 94, 92, 96, 91, 95, 93, 97 };
         private static readonly int[] s_ansiBg = { 40, 44, 42, 46, 41, 45, 43, 47, 100, 104, 102, 106, 101, 105, 103, 107 };
 
-        public int Width => _width / 2;
+        public int Width => _width;
         public int Height => _height;
 
         [DllImport("kernel32.dll", SetLastError = true)]
@@ -34,17 +30,16 @@ namespace Framework.Engine
 
         public ScreenBuffer(int width, int height)
         {
-            _width = width * 2;
+            _width = width;
             _height = height;
-            _chars = new char[_height, _width];
-            _fgColors = new ConsoleColor[_height, _width];
-            _bgColors = new ConsoleColor[_height, _width];
-            _frameBuilder = new StringBuilder(_width * _height * 4);
+            _chars = new char[height, width];
+            _fgColors = new ConsoleColor[height, width];
+            _bgColors = new ConsoleColor[height, width];
+            _frameBuilder = new StringBuilder(width * height * 4);
             Clear();
             EnableVirtualTerminalProcessing();
         }
 
-        // 색상 바꾸기 위해 윈도우 설정을 바꿔줘야하는데 그 기능을 하는 API함수
         private static void EnableVirtualTerminalProcessing()
         {
             try
@@ -77,15 +72,13 @@ namespace Framework.Engine
             }
         }
 
-        // 화면에 출력해주는 함수
         public void SetCell(int x, int y, char ch, ConsoleColor color = ConsoleColor.Gray, ConsoleColor bgColor = ConsoleColor.Black)
         {
-            int px = 2 * x;
-            if (px >= 0 && px < _width && y >= 0 && y < _height)
+            if (x >= 0 && x < _width && y >= 0 && y < _height)
             {
-                _chars[y, px] = ch;
-                _fgColors[y, px] = color;
-                _bgColors[y, px] = bgColor;
+                _chars[y, x] = ch;
+                _fgColors[y, x] = color;
+                _bgColors[y, x] = bgColor;
             }
         }
 
@@ -99,7 +92,7 @@ namespace Framework.Engine
 
         public void WriteTextCentered(int y, string text, ConsoleColor color = ConsoleColor.Gray, ConsoleColor bgColor = ConsoleColor.Black)
         {
-            int x = (_width/2/2 - text.Length/2);
+            int x = (_width - text.Length) / 2;
             WriteText(x, y, text, color, bgColor);
         }
 
@@ -187,7 +180,7 @@ namespace Framework.Engine
             }
 
             _frameBuilder.Append("\x1b[0m");
-            Console.Write(_frameBuilder.ToString()); // 한번에 그리기
+            Console.Write(_frameBuilder.ToString());
         }
     }
 }
