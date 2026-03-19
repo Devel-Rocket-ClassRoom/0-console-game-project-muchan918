@@ -33,10 +33,11 @@ public class Player : GameObject
         int cy = buffer.Height / 2;
 
         // 머리
-        buffer.SetCell(cx, cy, 'o');
+        buffer.SetCell(cx+1, cy, 'o');
         // 몸통
-        buffer.SetCell(cx, cy+1, '&');
-        // 무기
+        buffer.SetCell(cx+1, cy+1, '&');
+        // 손
+        buffer.SetCell(cx + 2, cy + 1, '\\');
     }
 
     public override void Update(float deltaTime)
@@ -56,9 +57,9 @@ public class Player : GameObject
         int dx = 0, dy = 0;
 
         if (Input.IsKey(ConsoleKey.W)) dy = -2; // 타일 1칸 = 월드 y+2
-        if (Input.IsKey(ConsoleKey.S)) dy = 2;
-        if (Input.IsKey(ConsoleKey.A)) dx = -4; // 타일 1칸 = 월드 x+4
-        if (Input.IsKey(ConsoleKey.D)) dx = 4;
+        else if (Input.IsKey(ConsoleKey.S)) dy = 2;
+        else if (Input.IsKey(ConsoleKey.A)) dx = -4; // 타일 1칸 = 월드 x+4
+        else if (Input.IsKey(ConsoleKey.D)) dx = 4;
 
         _direction = (dx, dy);
     }
@@ -70,9 +71,11 @@ public class Player : GameObject
         int nx = _headPosition.X + _direction.X;
         int ny = _headPosition.Y + _direction.Y;
 
-        
+        if(_map.IsMovable(nx, ny))
+        {
+            _headPosition = (nx, ny);
+        }
 
-        // if (_map.IsMovable(nx, ny))
-        _headPosition = (nx, ny);
+        return;
     }
 }

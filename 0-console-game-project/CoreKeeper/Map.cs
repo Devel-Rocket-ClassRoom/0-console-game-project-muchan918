@@ -128,4 +128,30 @@ public class Map : GameObject
     {
         _viewPosition = (worldX, worldY);
     }
+
+    public bool IsMovable(int worldX, int worldY)
+    {
+        int tileX = worldX / 4;
+        int tileY = worldY / 2;
+        if (tileX < 0 || tileY < 0 || tileX >= _tileWidth || tileY >= _tileHeight) return false;
+        return _tiles[tileY, tileX].IsMovable;
+    }
+
+    public bool IsMinable(int worldX, int worldY)
+    {
+        int tileX = worldX / 4;
+        int tileY = worldY / 2;
+        if (tileX < 0 || tileY < 0 || tileX >= _tileWidth || tileY >= _tileHeight) return false;
+        return _tiles[tileY, tileX].IsMinable;
+    }
+
+    public TileType BreakTile(int worldX, int worldY)
+    {
+        int tileX = worldX / 4;
+        int tileY = worldY / 2;
+        if (tileX < 0 || tileY < 0 || tileX >= _tileWidth || tileY >= _tileHeight) return TileType.Ground;
+        TileType broken = _tiles[tileY, tileX].Type;
+        _tiles[tileY, tileX] = new Tile(TileType.Ground);
+        return broken;
+    }
 }
