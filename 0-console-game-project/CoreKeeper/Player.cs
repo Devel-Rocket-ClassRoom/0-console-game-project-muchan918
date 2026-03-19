@@ -6,6 +6,7 @@ public class Player : GameObject
     private float _moveTimer;
     private float _moveInterval = 0.1f;
     private (int X, int Y) _direction = (0, 0);
+    private (int X, int Y) _lastDirection;
 
     private Map _map;
 
@@ -56,12 +57,31 @@ public class Player : GameObject
     {
         int dx = 0, dy = 0;
 
-        if (Input.IsKey(ConsoleKey.W)) dy = -2; // 타일 1칸 = 월드 y+2
-        else if (Input.IsKey(ConsoleKey.S)) dy = 2;
-        else if (Input.IsKey(ConsoleKey.A)) dx = -4; // 타일 1칸 = 월드 x+4
-        else if (Input.IsKey(ConsoleKey.D)) dx = 4;
+        if (Input.IsKey(ConsoleKey.W))
+        {
+            dy = -2;
+            _lastDirection = (0, -2);
+        }
+        else if (Input.IsKey(ConsoleKey.S))
+        {
+            dy = 2;
+            _lastDirection = (0, 2);
+        }
+        else if (Input.IsKey(ConsoleKey.A))
+        {
+            dx = -4;
+            _lastDirection = (-4, 0);
+        }
+        else if (Input.IsKey(ConsoleKey.D))
+        {
+            dx = 4;
+            _lastDirection = (4, 0);
+        }
 
         _direction = (dx, dy);
+
+        if (Input.IsKeyDown(ConsoleKey.Spacebar))
+            Mine();
     }
 
     public void Move()
@@ -77,5 +97,18 @@ public class Player : GameObject
         }
 
         return;
+    }
+
+    private void Mine()
+    {
+        // 마지막 방향으로 1타일 앞 월드 좌표
+        int targetX = _headPosition.X + _lastDirection.X;
+        int targetY = _headPosition.Y + _lastDirection.Y;
+
+        if (_map.IsMinable(targetX, targetY))
+        {
+            TileType broken = _map.BreakTile(targetX, targetY);
+            // 나중에 broken 타입으로 아이템 드롭 처리
+        }
     }
 }
