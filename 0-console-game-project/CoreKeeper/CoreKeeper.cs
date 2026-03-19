@@ -32,6 +32,7 @@ public class CoreKeeper : GameApp
             Quit();
             return;
         }
+        _scenes.CurrentScene?.Update(deltaTime);
     }
 
     // 씬 변경 플로우
@@ -44,8 +45,8 @@ public class CoreKeeper : GameApp
 
     private void ChangeToPlay()
     {
-        //var play = new PlayScene();
+        var play = new PlayScene();
         //play.PlayAgainRequested += ChangeToTitle;
-        //_scenes.ChangeScene(play);
+        _scenes.ChangeScene(play);
     }
 }
