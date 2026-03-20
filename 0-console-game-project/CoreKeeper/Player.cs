@@ -49,9 +49,17 @@ public class Player : GameObject, IAttacker, IDefender
         int cy = (buffer.Height / 2 / 2) * 2;
 
         // 타일 4×2 안에 캐릭터 표현
-        buffer.SetCell(cx + 1, cy, 'o', ConsoleColor.Yellow); // 머리
-        buffer.SetCell(cx + 1, cy + 1, '&', ConsoleColor.Cyan);   // 몸통
-        buffer.SetCell(cx + 2, cy + 1, '/', ConsoleColor.White);  // 손
+        // 머리
+        //buffer.SetCell(cx, cy, '▐', ConsoleColor.Yellow, ConsoleColor.Black); // 머리 테두리
+        buffer.SetCell(cx + 1, cy, '☺', ConsoleColor.Yellow, ConsoleColor.Black); // 얼굴 (모자 장착 시 교체)
+        //buffer.SetCell(cx + 2, cy, '▌', ConsoleColor.Yellow, ConsoleColor.Black); // 머리 테두리
+        //buffer.SetCell(cx + 3, cy, '░', ConsoleColor.DarkGray, ConsoleColor.Black); // 여백
+
+        // 몸통 + 손
+        //buffer.SetCell(cx, cy + 1, '░', ConsoleColor.DarkGray, ConsoleColor.Black); // 여백
+        buffer.SetCell(cx + 1, cy + 1, '█', ConsoleColor.Cyan, ConsoleColor.Black); // 몸통 (갑옷 시 색깔 변경)
+        buffer.SetCell(cx + 2, cy + 1, '/', ConsoleColor.DarkGray, ConsoleColor.Black); // 여백
+        //buffer.SetCell(cx + 3, cy + 1, '/', ConsoleColor.White, ConsoleColor.Black); // 손 (무기 교체)
     }
 
     public override void Update(float deltaTime)

@@ -23,17 +23,21 @@ public class Monster : Spawner, IAttacker, IDefender
     public void Attack(IDefender target)
     {
         target.TakeDamage(AttackDamage);
-    }
+    }              
 
     public override void Draw(ScreenBuffer buffer)
     {
         if (!IsInView(buffer)) return;
         var (sx, sy) = GetScreenPos(buffer);
 
-        buffer.SetCell(sx + 1, sy, '◢', ConsoleColor.Yellow, ConsoleColor.Black);
-        buffer.SetCell(sx + 2, sy, '◣', ConsoleColor.Yellow, ConsoleColor.Black);
-        buffer.SetCell(sx + 1, sy + 1, '▝', ConsoleColor.Cyan, ConsoleColor.Black);
-        buffer.SetCell(sx + 2, sy + 1, '▝', ConsoleColor.Cyan, ConsoleColor.Black);
+        buffer.SetCell(sx, sy, '▗', ConsoleColor.Green, ConsoleColor.Black);
+        buffer.SetCell(sx + 1, sy, '▆', ConsoleColor.Green, ConsoleColor.Black);
+        buffer.SetCell(sx + 2, sy, '▆', ConsoleColor.Green, ConsoleColor.Black);
+        buffer.SetCell(sx + 3, sy, '▖', ConsoleColor.Green, ConsoleColor.Black);
+        buffer.SetCell(sx, sy + 1, '▝', ConsoleColor.DarkGreen, ConsoleColor.Black);
+        buffer.SetCell(sx + 1, sy + 1, '▄', ConsoleColor.DarkGreen, ConsoleColor.Black);
+        buffer.SetCell(sx + 2, sy + 1, '▄', ConsoleColor.DarkGreen, ConsoleColor.Black);
+        buffer.SetCell(sx + 3, sy + 1, '▘', ConsoleColor.DarkGreen, ConsoleColor.Black);
     }
 
     public void TakeDamage(int amount)

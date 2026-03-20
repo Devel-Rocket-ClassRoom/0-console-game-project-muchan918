@@ -30,6 +30,7 @@ public class PlayScene : Scene
         AddGameObject(spawnManager);
 
         spawnManager.Register<Monster>();
+        spawnManager.Register<Mushroom>();
         spawnManager.SpawnAll();
     }
 
