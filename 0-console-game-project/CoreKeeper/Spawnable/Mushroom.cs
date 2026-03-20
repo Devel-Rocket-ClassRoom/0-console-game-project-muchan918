@@ -15,7 +15,7 @@ public class Mushroom : Spawner, IDefender
     public Mushroom(Scene scene, Map map, int tileX, int tileY)
         : base(scene, map, tileX, tileY)
     {
-        Name = "Mushroom";
+        Name = "MushroomInstance";
         s_CurrentCount++;
     }
 
@@ -40,7 +40,7 @@ public class Mushroom : Spawner, IDefender
         if (!IsAlive)
         {
             s_CurrentCount--;
-            //DropItem();
+            Scene.AddGameObject(new MushroomItem(Scene, Map, TileX, TileY));
             Scene.RemoveGameObject(this);
         }
     }

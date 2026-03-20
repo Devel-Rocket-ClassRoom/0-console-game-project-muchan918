@@ -29,7 +29,7 @@ public class PlayScene : Scene
         spawnManager = new SpawnManager(this, map);
         AddGameObject(spawnManager);
 
-        spawnManager.Register<Monster>();
+        spawnManager.Register<Slime>();
         spawnManager.Register<Mushroom>();
         spawnManager.SpawnAll();
     }

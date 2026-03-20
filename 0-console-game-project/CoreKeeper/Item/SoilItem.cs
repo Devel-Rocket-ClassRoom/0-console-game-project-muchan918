@@ -3,9 +3,6 @@ using Framework.Engine;
 
 public class SoilItem : Item, IDroppable, IInventoryItem
 {
-    public override string Name { get; set; } = "Soil";
-    public override ConsoleColor Color => ConsoleColor.DarkGreen;
-
     public int TileX { get; set; }
     public int TileY { get; set; }
 
@@ -16,6 +13,7 @@ public class SoilItem : Item, IDroppable, IInventoryItem
 
     public SoilItem(Scene scene, Map map, int tileX, int tileY) : base(scene)
     {
+        Name = "Soil";
         _map = map;
         TileX = tileX;
         TileY = tileY;
@@ -43,10 +41,10 @@ public class SoilItem : Item, IDroppable, IInventoryItem
         var (sx, sy) = _map.TileToScreen(TileX, TileY, buffer);
         if (sx < 0 || sy < 0 || sx + 1 >= buffer.Width || sy + 1 >= buffer.Height) return;
 
-        buffer.SetCell(sx + 1, sy, '▗', Color);
-        buffer.SetCell(sx + 2, sy, '▖', Color);
-        buffer.SetCell(sx + 1, sy + 1, '▝', Color);
-        buffer.SetCell(sx + 2, sy + 1, '▘', Color);
+        buffer.SetCell(sx + 1, sy, '▄', ConsoleColor.DarkGreen, ConsoleColor.Black);
+        buffer.SetCell(sx + 2, sy, '▄', ConsoleColor.DarkGreen, ConsoleColor.Black);
+        buffer.SetCell(sx + 1, sy + 1, '▀', ConsoleColor.DarkGreen, ConsoleColor.Black);
+        buffer.SetCell(sx + 2, sy + 1, '▀', ConsoleColor.DarkGreen, ConsoleColor.Black);
     }
 
     public override void DrawIcon(int tx, int ty, ScreenBuffer buffer)
@@ -54,10 +52,10 @@ public class SoilItem : Item, IDroppable, IInventoryItem
         int sx = tx * 4;
         int sy = ty * 2;
 
-        buffer.SetCell(sx + 1, sy, '▗', Color, ConsoleColor.DarkGray);
-        buffer.SetCell(sx + 2, sy, '▖', Color, ConsoleColor.DarkGray);
-        buffer.SetCell(sx + 1, sy + 1, '▝', Color, ConsoleColor.DarkGray);
-        buffer.SetCell(sx + 2, sy + 1, '▘', Color, ConsoleColor.DarkGray);
+        buffer.SetCell(sx + 1, sy, '▄', ConsoleColor.DarkGreen, ConsoleColor.DarkGray);
+        buffer.SetCell(sx + 2, sy, '▄', ConsoleColor.DarkGreen, ConsoleColor.DarkGray);
+        buffer.SetCell(sx + 1, sy + 1, '▀', ConsoleColor.DarkGreen, ConsoleColor.DarkGray);
+        buffer.SetCell(sx + 2, sy + 1, '▀', ConsoleColor.DarkGreen, ConsoleColor.DarkGray);
     }
 
     public override void Use(Player player) { }

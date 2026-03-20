@@ -4,9 +4,6 @@ using Framework.Engine;
 // WoodItem
 public class WoodItem : Item, IDroppable, IInventoryItem
 {
-    public override string Name { get; set; } = "Wood";
-    public override ConsoleColor Color => ConsoleColor.DarkYellow;
-
     // IDroppable - 타일 좌표
     public int TileX { get; set; }
     public int TileY { get; set; }
@@ -19,6 +16,7 @@ public class WoodItem : Item, IDroppable, IInventoryItem
 
     public WoodItem(Scene scene, Map map, int tileX, int tileY) : base(scene)
     {
+        Name = "Wood";
         _map = map;
         TileX = tileX;
         TileY = tileY;
@@ -47,10 +45,10 @@ public class WoodItem : Item, IDroppable, IInventoryItem
         var (sx, sy) = _map.TileToScreen(TileX, TileY, buffer);
         if (sx < 0 || sy < 0 || sx + 1 >= buffer.Width || sy + 1 >= buffer.Height) return;
 
-        buffer.SetCell(sx + 1, sy, '▗', Color);
-        buffer.SetCell(sx + 2, sy, '▖', Color);
-        buffer.SetCell(sx + 1, sy + 1, '▝', Color);
-        buffer.SetCell(sx + 2, sy + 1, '▘', Color);
+        buffer.SetCell(sx + 1, sy, '▄', ConsoleColor.DarkYellow, ConsoleColor.Black);
+        buffer.SetCell(sx + 2, sy, '▄', ConsoleColor.DarkYellow, ConsoleColor.Black);
+        buffer.SetCell(sx + 1, sy + 1, '▀', ConsoleColor.DarkYellow, ConsoleColor.Black);
+        buffer.SetCell(sx + 2, sy + 1, '▀', ConsoleColor.DarkYellow, ConsoleColor.Black);
     }
 
     public override void DrawIcon(int tx, int ty, ScreenBuffer buffer)
@@ -58,10 +56,10 @@ public class WoodItem : Item, IDroppable, IInventoryItem
         int sx = tx * 4;
         int sy = ty * 2;
 
-        buffer.SetCell(sx + 1, sy, '▗', Color, ConsoleColor.DarkGray);
-        buffer.SetCell(sx + 2, sy, '▖', Color, ConsoleColor.DarkGray);
-        buffer.SetCell(sx + 1, sy + 1, '▝', Color, ConsoleColor.DarkGray);
-        buffer.SetCell(sx + 2, sy + 1, '▘', Color, ConsoleColor.DarkGray);
+        buffer.SetCell(sx + 1, sy, '▄', ConsoleColor.DarkYellow, ConsoleColor.DarkGray);
+        buffer.SetCell(sx + 2, sy, '▄', ConsoleColor.DarkYellow, ConsoleColor.DarkGray);
+        buffer.SetCell(sx + 1, sy + 1, '▀', ConsoleColor.DarkYellow, ConsoleColor.DarkGray);
+        buffer.SetCell(sx + 2, sy + 1, '▀', ConsoleColor.DarkYellow, ConsoleColor.DarkGray);
     }
 
     public override void Use(Player player) { }

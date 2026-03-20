@@ -1,16 +1,16 @@
 ﻿using System;
 using Framework.Engine;
 
-public class Monster : Spawner, IAttacker, IDefender
+public class Slime : Spawner, IAttacker, IDefender
 {
     // static으로 전체 수량 관리
     public static int s_MaxCount = 80;
     public static int s_CurrentCount = 0;
 
-    public Monster(Scene scene, Map map, int tileX, int tileY)
+    public Slime(Scene scene, Map map, int tileX, int tileY)
         : base(scene, map, tileX, tileY)
     {
-        Name = "Monster";
+        Name = "SlimeInstance";
         s_CurrentCount++;
     }
 
@@ -35,8 +35,8 @@ public class Monster : Spawner, IAttacker, IDefender
         buffer.SetCell(sx + 2, sy, '▆', ConsoleColor.Green, ConsoleColor.Black);
         buffer.SetCell(sx + 3, sy, '▖', ConsoleColor.Green, ConsoleColor.Black);
         buffer.SetCell(sx, sy + 1, '▝', ConsoleColor.DarkGreen, ConsoleColor.Black);
-        buffer.SetCell(sx + 1, sy + 1, '▄', ConsoleColor.DarkGreen, ConsoleColor.Black);
-        buffer.SetCell(sx + 2, sy + 1, '▄', ConsoleColor.DarkGreen, ConsoleColor.Black);
+        buffer.SetCell(sx + 1, sy + 1, '▀', ConsoleColor.DarkGreen, ConsoleColor.Black);
+        buffer.SetCell(sx + 2, sy + 1, '▀', ConsoleColor.DarkGreen, ConsoleColor.Black);
         buffer.SetCell(sx + 3, sy + 1, '▘', ConsoleColor.DarkGreen, ConsoleColor.Black);
     }
 
@@ -46,6 +46,7 @@ public class Monster : Spawner, IAttacker, IDefender
         if (!IsAlive)
         {
             s_CurrentCount--;
+            Scene.AddGameObject(new SlimeItem(Scene, Map, TileX, TileY));
             Scene.RemoveGameObject(this);
         }    
     }
