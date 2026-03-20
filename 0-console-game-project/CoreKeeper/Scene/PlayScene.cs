@@ -51,4 +51,10 @@ public class PlayScene : Scene
         UpdateGameObjects(deltaTime);
         map.SetViewPosition(player.Position.X, player.Position.Y);
     }
+
+    public IDefender? FindDefender(int tileX, int tileY)
+    {
+        return GetGameObjects<Spawner>()
+            .FirstOrDefault(s => s.TileX == tileX && s.TileY == tileY) as IDefender;
+    }
 }

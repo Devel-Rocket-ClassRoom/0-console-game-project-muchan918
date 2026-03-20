@@ -49,11 +49,13 @@ public class SpawnManager : GameObject
     private (int tx, int ty) GetRandomMovableTile()
     {
         int tx, ty;
+        int cx = _map.TileWidth / 2;
+        int cy = _map.TileHeight / 2;
         do
         {
             tx = _random.Next(0, _map.TileWidth);
             ty = _random.Next(0, _map.TileHeight);
-        } while (!_map.IsMovable(tx, ty));
+        } while (!_map.IsMovable(tx, ty) || IsNearCenter(tx, ty, cx, cy));
         return (tx, ty);
     }
 
@@ -71,5 +73,11 @@ public class SpawnManager : GameObject
         foreach (var type in _spawnerTypes)
             if (GetCurrentCount(type) < GetMaxCount(type))
                 SpawnOne(type);
+    }
+
+    private bool IsNearCenter(int tx, int ty, int cx, int cy)
+    {
+        int radius = 10; // 중심 타일 반경
+        return Math.Abs(tx - cx) <= radius && Math.Abs(ty - cy) <= radius;
     }
 }

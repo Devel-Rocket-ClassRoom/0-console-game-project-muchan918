@@ -3,10 +3,18 @@ using Framework.Engine;
 
 public class Player : GameObject, IAttacker, IDefender
 {
+    private PlayScene? _scene;
+
+    // Move Timer
     private float _moveTimer;
     private float _moveInterval = 0.1f;
+
+    // Action Timer
+    private float _actionTimer = 0f;
+    private float _actionInterval = 0.5f;
+    private bool _actionReady = true;
+
     private (int X, int Y) _direction = (0, 0);
-    private (int X, int Y) _lastDirection;
 
     private readonly Map _map;
     public readonly Inventory Inventory;
@@ -24,6 +32,7 @@ public class Player : GameObject, IAttacker, IDefender
 
     public Player(Scene scene, Map map, int startX, int startY) : base(scene)
     {
+        _scene = scene as PlayScene;
         Name = "Player";
         _map = map;
         _position = (startX, startY);
@@ -53,9 +62,15 @@ public class Player : GameObject, IAttacker, IDefender
             return;
         }
 
-        if (Inventory.IsOpen) return;
-
-        HandleInput();
+        if (!_actionReady)
+        {
+            _actionTimer += deltaTime;
+            if (_actionTimer >= _actionInterval)
+            {
+                _actionReady = true;
+                _actionTimer = 0;
+            }
+        }
 
         _moveTimer += deltaTime;
         if (_moveTimer >= _moveInterval)
@@ -63,21 +78,31 @@ public class Player : GameObject, IAttacker, IDefender
             Move();
             _moveTimer = 0;
         }
+
+        if (Inventory.IsOpen) return;
+
+        HandleInput();
     }
 
     private void HandleInput()
     {
         int dx = 0, dy = 0;
 
-        if (Input.IsKey(ConsoleKey.W)) { dy = -1; _lastDirection = (0, -1); }
-        else if (Input.IsKey(ConsoleKey.S)) { dy = 1; _lastDirection = (0, 1); }
-        else if (Input.IsKey(ConsoleKey.A)) { dx = -1; _lastDirection = (-1, 0); }
-        else if (Input.IsKey(ConsoleKey.D)) { dx = 1; _lastDirection = (1, 0); }
+        if (Input.IsKey(ConsoleKey.W)) { dy = -1; }
+        else if (Input.IsKey(ConsoleKey.S)) { dy = 1; }
+        else if (Input.IsKey(ConsoleKey.A)) { dx = -1; }
+        else if (Input.IsKey(ConsoleKey.D)) { dx = 1; }
 
         _direction = (dx, dy);
 
-        if (Input.IsKeyDown(ConsoleKey.Spacebar))
-            Action();
+        // action 가능하면 방향키로 Action 
+        if (_actionReady)
+        {
+            if (Input.IsKey(ConsoleKey.UpArrow)) { Action(0, -1); _actionReady = false; }
+            else if (Input.IsKey(ConsoleKey.DownArrow)) { Action(0, 1); _actionReady = false; }
+            else if (Input.IsKey(ConsoleKey.LeftArrow)) { Action(-1, 0); _actionReady = false; }
+            else if (Input.IsKey(ConsoleKey.RightArrow)) { Action(1, 0); _actionReady = false; }
+        }
     }
 
     public void Move()
@@ -95,17 +120,24 @@ public class Player : GameObject, IAttacker, IDefender
         return;
     }
 
-    private void Action()
+    private void Action(int dx, int dy)
     {
-        int targetX = _position.X + _lastDirection.X;
-        int targetY = _position.Y + _lastDirection.Y;
+        int targetX = _position.X + dx;
+        int targetY = _position.Y + dy;
+
+        var defender = _scene!.FindDefender(targetX, targetY);
+        if (defender != null)
+        {
+            Attack(defender);
+            return;
+        }
 
         if (_map.IsMinable(targetX, targetY))
         {
             Mine(targetX, targetY);
             return;
         }
-
+        // 추후 공격 등
     }
 
     private void Mine(int tileX, int tileY)

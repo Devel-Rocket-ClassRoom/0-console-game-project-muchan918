@@ -4,7 +4,7 @@ using Framework.Engine;
 public class Monster : Spawner, IAttacker, IDefender
 {
     // static으로 전체 수량 관리
-    public static int s_MaxCount = 100;
+    public static int s_MaxCount = 80;
     public static int s_CurrentCount = 0;
 
     public Monster(Scene scene, Map map, int tileX, int tileY)
