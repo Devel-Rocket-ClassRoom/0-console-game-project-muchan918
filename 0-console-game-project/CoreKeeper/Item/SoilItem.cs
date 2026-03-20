@@ -10,7 +10,7 @@ public class SoilItem : Item, IDroppable, IInventoryItem
     public int TileY { get; set; }
 
     public int Count { get; set; } = 1;
-    public int MaxStack => 99;
+    public int MaxStack => 10;
 
     private readonly Map _map;
 
@@ -29,13 +29,13 @@ public class SoilItem : Item, IDroppable, IInventoryItem
         if (player.Position == (TileX, TileY))
         {
             OnPickup(player);
-            Scene.RemoveGameObject(this);
         }
     }
 
     public void OnPickup(Player player)
     {
-        // 추후 인벤토리에 추가
+        player.Inventory.AddItem(this);
+        Scene.RemoveGameObject(this);
     }
 
     public override void Draw(ScreenBuffer buffer)
@@ -43,10 +43,21 @@ public class SoilItem : Item, IDroppable, IInventoryItem
         var (sx, sy) = _map.TileToScreen(TileX, TileY, buffer);
         if (sx < 0 || sy < 0 || sx + 1 >= buffer.Width || sy + 1 >= buffer.Height) return;
 
-        buffer.SetCell(sx + 1, sy, '┏', Color);
-        buffer.SetCell(sx + 2, sy, '┓', Color);
-        buffer.SetCell(sx + 1, sy + 1, '┗', Color);
-        buffer.SetCell(sx + 2, sy + 1, '┛', Color);
+        buffer.SetCell(sx + 1, sy, '▗', Color);
+        buffer.SetCell(sx + 2, sy, '▖', Color);
+        buffer.SetCell(sx + 1, sy + 1, '▝', Color);
+        buffer.SetCell(sx + 2, sy + 1, '▘', Color);
+    }
+
+    public override void DrawIcon(int tx, int ty, ScreenBuffer buffer)
+    {
+        int sx = tx * 4;
+        int sy = ty * 2;
+
+        buffer.SetCell(sx + 1, sy, '▗', Color, ConsoleColor.DarkGray);
+        buffer.SetCell(sx + 2, sy, '▖', Color, ConsoleColor.DarkGray);
+        buffer.SetCell(sx + 1, sy + 1, '▝', Color, ConsoleColor.DarkGray);
+        buffer.SetCell(sx + 2, sy + 1, '▘', Color, ConsoleColor.DarkGray);
     }
 
     public override void Use(Player player) { }

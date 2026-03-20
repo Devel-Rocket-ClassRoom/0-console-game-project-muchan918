@@ -5,11 +5,11 @@ using Framework.Engine;
 public class Map : GameObject
 {
     // 타일 배열 크기
-    private readonly int _tileWidth = 100;
-    private readonly int _tileHeight = 50;
+    private readonly int _tileWidth = 200;
+    private readonly int _tileHeight = 100;
 
     // viewPosition은 월드 좌표 기준
-    private (int X, int Y) _viewPosition = (50, 25);
+    private (int X, int Y) _viewPosition = (100, 50);
     public (int X, int Y) ViewPosition => _viewPosition;
 
     private readonly Tile[,] _tiles; // [tileY, tileX]

@@ -8,7 +8,8 @@ public class Player : GameObject
     private (int X, int Y) _direction = (0, 0);
     private (int X, int Y) _lastDirection;
 
-    private Map _map;
+    private readonly Map _map;
+    public readonly Inventory Inventory;
 
     private (int X, int Y) _position;
     public (int X, int Y) Position => _position;
@@ -19,6 +20,9 @@ public class Player : GameObject
         _map = map;
         _position = (startX, startY);
         _moveTimer = _moveInterval;
+
+        Inventory = new Inventory(scene);
+        scene.AddGameObject(Inventory);
     }
 
     public override void Draw(ScreenBuffer buffer)
@@ -35,6 +39,14 @@ public class Player : GameObject
 
     public override void Update(float deltaTime)
     {
+        if (Input.IsKeyDown(ConsoleKey.Tab))
+        {
+            Inventory.Toggle();
+            return;
+        }
+
+        if (Inventory.IsOpen) return;
+
         HandleInput();
 
         _moveTimer += deltaTime;
