@@ -14,9 +14,9 @@ public class Slot
         int sx = tx * 4;
         int sy = ty * 2;
 
-        ConsoleColor border = selected ? ConsoleColor.Green : ConsoleColor.Black;
-        ConsoleColor bg = isQuick ? ConsoleColor.Black : ConsoleColor.DarkGray;
-
+        ConsoleColor border = isQuick ? ConsoleColor.Black : ConsoleColor.Gray;
+        border = selected ? ConsoleColor.Green : border;
+        
         // 배경 먼저 채우기
         for (int dy = 0; dy < 2; dy++)
             for (int dx = 0; dx < 4; dx++)

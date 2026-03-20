@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Folder Include="CoreKeeper\Inventory\" />
     <Folder Include="Engine\" />
     <Folder Include="docs\" />
   </ItemGroup>

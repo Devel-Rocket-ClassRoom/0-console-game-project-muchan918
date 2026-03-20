@@ -1,0 +1,10 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace _0_console_game_project.CoreKeeper.Spawnable
+{
+    internal class Mushroom
+    {
+    }
+}

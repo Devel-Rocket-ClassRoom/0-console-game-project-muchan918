@@ -1,7 +1,7 @@
 ﻿using System;
 using Framework.Engine;
 
-public class Player : GameObject
+public class Player : GameObject, IAttacker, IDefender
 {
     private float _moveTimer;
     private float _moveInterval = 0.1f;
@@ -13,6 +13,14 @@ public class Player : GameObject
 
     private (int X, int Y) _position;
     public (int X, int Y) Position => _position;
+
+    // IAttacker
+    public int AttackDamage { get; private set; } = 5;
+
+    // IDefender
+    public int MaxHp { get; private set; } = 20;
+    public int Hp { get; private set; } = 20;
+    public bool IsAlive => Hp > 0;
 
     public Player(Scene scene, Map map, int startX, int startY) : base(scene)
     {
@@ -113,5 +121,15 @@ public class Player : GameObject
 
         if (item != null)
             Scene.AddGameObject(item);
+    }
+
+    public void Attack(IDefender target)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void TakeDamage(int amount)
+    {
+        throw new NotImplementedException();
     }
 }

@@ -25,7 +25,7 @@ public class QuickSlot : GameObject
         for (int i = 0; i < k_SlotCount; i++)
         {
             bool selected = (i == _selectedIndex);
-            _inventory.GetSlot(0, i).Draw(buffer, k_StartTileX + i, k_StartTileY, selected);
+            _inventory.GetSlot(0, i).Draw(buffer, k_StartTileX + i, k_StartTileY, selected, true);
         }
     }
 

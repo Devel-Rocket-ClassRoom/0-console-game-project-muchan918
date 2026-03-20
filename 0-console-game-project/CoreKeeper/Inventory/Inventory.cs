@@ -71,7 +71,8 @@ public class Inventory : GameObject
             for (int x = 0; x < k_SlotCountX; x++)
             {
                 bool selected = (x == _selectedX && y == _selectedY);
-                _slots[y, x].Draw(buffer, k_SlotStartX + x, k_SlotStartY + y, selected);
+                bool isQuick = (y == 0 && x >= 0 && x < 6);
+                _slots[y, x].Draw(buffer, k_SlotStartX + x, k_SlotStartY + y, selected, isQuick);
             }
         }
 
