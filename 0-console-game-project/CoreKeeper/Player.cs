@@ -125,11 +125,11 @@ public class Player : GameObject, IAttacker, IDefender
 
     public void Attack(IDefender target)
     {
-        throw new NotImplementedException();
+        target.TakeDamage(AttackDamage);
     }
 
     public void TakeDamage(int amount)
     {
-        throw new NotImplementedException();
+        Hp = Math.Max(0, Hp - amount);
     }
 }

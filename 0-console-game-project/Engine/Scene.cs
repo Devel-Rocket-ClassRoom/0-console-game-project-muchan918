@@ -94,6 +94,11 @@ namespace Framework.Engine
             return null;
         }
 
+        public IEnumerable<T> GetGameObjects<T>() where T : GameObject
+        {
+            return _gameObjects.OfType<T>();
+        }
+
         private void FlushPending()
         {
             if (_pendingRemove.Count > 0)

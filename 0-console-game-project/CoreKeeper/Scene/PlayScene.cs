@@ -1,11 +1,12 @@
-﻿using System;
-using Framework.Engine;
+﻿using Framework.Engine;
+using System;
 
 public class PlayScene : Scene
 {
     private Map map;
     private Player player;
     private QuickSlot quickSlot;
+    private SpawnManager spawnManager;
 
     public override void Draw(ScreenBuffer buffer)
     {
@@ -24,6 +25,12 @@ public class PlayScene : Scene
 
         quickSlot = new QuickSlot(this, player.Inventory);
         AddGameObject(quickSlot);
+
+        spawnManager = new SpawnManager(this, map);
+        AddGameObject(spawnManager);
+
+        spawnManager.Register<Monster>();
+        spawnManager.SpawnAll();
     }
 
     public override void Unload()

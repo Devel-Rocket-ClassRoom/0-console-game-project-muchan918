@@ -8,6 +8,9 @@ public class Map : GameObject
     private readonly int _tileWidth = 200;
     private readonly int _tileHeight = 100;
 
+    public int TileWidth => _tileWidth;
+    public int TileHeight => _tileHeight;
+
     // viewPosition은 월드 좌표 기준
     private (int X, int Y) _viewPosition = (100, 50);
     public (int X, int Y) ViewPosition => _viewPosition;

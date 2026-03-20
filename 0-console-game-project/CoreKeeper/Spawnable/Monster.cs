@@ -3,10 +3,15 @@ using Framework.Engine;
 
 public class Monster : Spawner, IAttacker, IDefender
 {
+    // static으로 전체 수량 관리
+    public static int s_MaxCount = 100;
+    public static int s_CurrentCount = 0;
+
     public Monster(Scene scene, Map map, int tileX, int tileY)
         : base(scene, map, tileX, tileY)
     {
         Name = "Monster";
+        s_CurrentCount++;
     }
 
     public int AttackDamage { get; private set; } = 3;
@@ -35,7 +40,10 @@ public class Monster : Spawner, IAttacker, IDefender
     {
         Hp = Math.Max(0, Hp - amount);
         if (!IsAlive)
+        {
+            s_CurrentCount--;
             Scene.RemoveGameObject(this);
+        }    
     }
 
     public override void Update(float deltaTime)
