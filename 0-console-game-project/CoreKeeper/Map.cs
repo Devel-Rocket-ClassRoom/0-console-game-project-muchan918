@@ -5,11 +5,11 @@ using Framework.Engine;
 public class Map : GameObject
 {
     // 타일 배열 크기
-    private readonly int _tileWidth = 200;
-    private readonly int _tileHeight = 100;
+    private readonly int _tileWidth = 100;
+    private readonly int _tileHeight = 50;
 
     // viewPosition은 월드 좌표 기준
-    private (int X, int Y) _viewPosition = (10, 10);
+    private (int X, int Y) _viewPosition = (50, 25);
     public (int X, int Y) ViewPosition => _viewPosition;
 
     private readonly Tile[,] _tiles; // [tileY, tileX]
@@ -59,6 +59,8 @@ public class Map : GameObject
         if (_random.NextDouble() < spreadChance) Spread(tx, ty - 1, depth - 1, type, spreadChance);
     }
 
+    private bool InBounds(int tx, int ty) => tx >= 0 && ty >= 0 && tx < _tileWidth && ty < _tileHeight;
+
     public override void Update(float deltaTime)
     {
         
@@ -66,47 +68,39 @@ public class Map : GameObject
 
     public override void Draw(ScreenBuffer buffer)
     {
-        // 타일 1개 = 월드 4×2 이므로 화면에 보이는 타일 수
-        int viewTileW = buffer.Width / 4; // 80/4 = 20
-        int viewTileH = buffer.Height / 2; // 20/2 = 10
+        int viewTileW = buffer.Width / 4;
+        int viewTileH = buffer.Height / 2;
 
-        // 월드 → 타일 변환
-        int viewTileX = _viewPosition.X / 4;
-        int viewTileY = _viewPosition.Y / 2;
-
-        int startTileX = viewTileX - viewTileW / 2;
-        int startTileY = viewTileY - viewTileH / 2;
+        int startTileX = _viewPosition.X - viewTileW / 2;
+        int startTileY = _viewPosition.Y - viewTileH / 2;
 
         for (int ty = 0; ty < viewTileH; ty++)
         {
             int tileY = startTileY + ty;
- 
+
             for (int tx = 0; tx < viewTileW; tx++)
             {
                 int tileX = startTileX + tx;
- 
-                if (tileX < 0 || tileY < 0 || tileX >= _tileWidth || tileY >= _tileHeight)
+
+                if (!InBounds(tileX, tileY))
                 {
-                    DrawOutSide(buffer, tx, ty, '░', ConsoleColor.DarkGray);
+                    DrawOutside(buffer, tx, ty);
                     continue;
                 }
- 
+
                 Tile tile = _tiles[tileY, tileX];
                 DrawTile(buffer, tx, ty, tile.DisplayChar, tile.ForeColor);
             }
         }
     }
 
-    // 월드 타일 좌표(tx, ty)를 스크린 4×2로 그리는 함수
-    private void DrawOutSide(ScreenBuffer buffer, int tx, int ty, char ch, ConsoleColor color)
+    private void DrawOutside(ScreenBuffer buffer, int tx, int ty)
     {
-        int sx = tx * 4; // DrawTile이랑 동일한 기준
+        int sx = tx * 4;
         int sy = ty * 2;
-
-        // 4×2 전체 채우기
         for (int dy = 0; dy < 2; dy++)
             for (int dx = 0; dx < 4; dx++)
-                buffer.SetCell(sx + dx, sy + dy, ch, color);
+                buffer.SetCell(sx + dx, sy + dy, '░', ConsoleColor.DarkGray);
     }
 
     // 타일 1개를 스크린 (sx,sy)(sx+2,sy)(sx,sy+1)(sx+2,sy+1) 4군데에 찍기
@@ -114,44 +108,51 @@ public class Map : GameObject
     // 스크린 좌표: sx = tx*4 기준으로 0,2 / sy = ty*2 기준으로 0,1
     private void DrawTile(ScreenBuffer buffer, int tx, int ty, char ch, ConsoleColor color)
     {
-        int sx = tx * 4; // 타일 1개 = 가로 4칸
-        int sy = ty * 2; // 타일 1개 = 세로 2칸
-
-        buffer.SetCell(sx, sy, ch, color); // (0,0)
-        buffer.SetCell(sx + 2, sy, ch, color); // (2,0)
-        buffer.SetCell(sx, sy + 1, ch, color); // (0,1)
-        buffer.SetCell(sx + 2, sy + 1, ch, color); // (2,1)
+        int sx = tx * 4;
+        int sy = ty * 2;
+        buffer.SetCell(sx, sy, ch, color);
+        buffer.SetCell(sx + 2, sy, ch, color);
+        buffer.SetCell(sx, sy + 1, ch, color);
+        buffer.SetCell(sx + 2, sy + 1, ch, color);
     }
 
-    // 월드 좌표로 viewPosition 설정
-    public void SetViewPosition(int worldX, int worldY)
+    public void SetViewPosition(int tileX, int tileY)
     {
-        _viewPosition = (worldX, worldY);
+        _viewPosition = (tileX, tileY);
     }
 
-    public bool IsMovable(int worldX, int worldY)
+    public bool IsMovable(int tileX, int tileY)
     {
-        int tileX = worldX / 4;
-        int tileY = worldY / 2;
-        if (tileX < 0 || tileY < 0 || tileX >= _tileWidth || tileY >= _tileHeight) return false;
+        if (!InBounds(tileX, tileY)) return false;
         return _tiles[tileY, tileX].IsMovable;
     }
 
-    public bool IsMinable(int worldX, int worldY)
+    public bool IsMinable(int tileX, int tileY)
     {
-        int tileX = worldX / 4;
-        int tileY = worldY / 2;
-        if (tileX < 0 || tileY < 0 || tileX >= _tileWidth || tileY >= _tileHeight) return false;
+        if (!InBounds(tileX, tileY)) return false;
         return _tiles[tileY, tileX].IsMinable;
     }
 
-    public TileType BreakTile(int worldX, int worldY)
+    public TileType BreakTile(int tileX, int tileY)
     {
-        int tileX = worldX / 4;
-        int tileY = worldY / 2;
-        if (tileX < 0 || tileY < 0 || tileX >= _tileWidth || tileY >= _tileHeight) return TileType.Ground;
+        if (!InBounds(tileX, tileY)) return TileType.Ground;
         TileType broken = _tiles[tileY, tileX].Type;
         _tiles[tileY, tileX] = new Tile(TileType.Ground);
         return broken;
+    }
+
+    // ── 타일 좌표 → 스크린 좌표 변환 ─────
+    // 외부에서 쓸 수 있도록 public
+    public (int sx, int sy) TileToScreen(int tileX, int tileY, ScreenBuffer buffer)
+    {
+        int viewTileW = buffer.Width / 4;
+        int viewTileH = buffer.Height / 2;
+
+        int startTileX = _viewPosition.X - viewTileW / 2;
+        int startTileY = _viewPosition.Y - viewTileH / 2;
+
+        int sx = (tileX - startTileX) * 4;
+        int sy = (tileY - startTileY) * 2;
+        return (sx, sy);
     }
 }
