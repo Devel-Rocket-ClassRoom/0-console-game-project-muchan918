@@ -13,6 +13,9 @@ public class PlayerEquipment : GameObject
         (13, 3), // RightHand
     };
 
+    private int _selectedIndex = 0;
+    private bool _isFocused = false;
+
     private Slot[] _slots;
     private readonly Player _player;
 
@@ -26,13 +29,29 @@ public class PlayerEquipment : GameObject
         _player = player;
     }
 
+    public void HandleInput(Inventory inventory)
+    {
+        _isFocused = true;
+
+        if (Input.IsKeyDown(ConsoleKey.A))
+            _selectedIndex = (_selectedIndex - 1 + k_SlotCount) % k_SlotCount;
+        else if (Input.IsKeyDown(ConsoleKey.D))
+            _selectedIndex = (_selectedIndex + 1) % k_SlotCount;
+        else if (Input.IsKeyDown(ConsoleKey.S) || Input.IsKeyDown(ConsoleKey.W))
+        {
+            _isFocused = false;
+            inventory.ReturnToInventory();
+        }
+    }
+
     public override void Draw(ScreenBuffer buffer)
     {
         // 슬롯 그리기
         for (int i = 0; i < k_SlotCount; i++)
         {
             var (tx, ty) = k_SlotPos[i];
-            _slots[i].Draw(buffer, tx, ty, false, false);
+            bool selected = (i == _selectedIndex && _isFocused);
+            _slots[i].Draw(buffer, tx, ty, selected, false);
         }
 
         // 플레이어 외형 출력 (12, 3) - 장비 착용 상태 그대로 반영
@@ -47,4 +66,9 @@ public class PlayerEquipment : GameObject
     }
 
     public Slot GetSlot(EquipSlot slot) => _slots[(int)slot];
+
+    public void SetSelected(int index)
+    {
+        _selectedIndex = Math.Clamp(index, 0, k_SlotCount - 1);
+    }
 }

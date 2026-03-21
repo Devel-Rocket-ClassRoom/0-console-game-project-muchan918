@@ -16,9 +16,14 @@ public class Inventory : GameObject
     private const int k_SlotCountX = 12;
     private const int k_SlotCountY = 2;
 
+    // 인벤토리 - 제작 - 장비 focus 변수
+    private enum FocusPanel { Inventory, Craft, Equipment }
+    private FocusPanel _focus = FocusPanel.Inventory;
+
     // 인벤토리 선택 좌표
     private int _selectedX = 0;
     private int _selectedY = 0;
+    private bool _isFocused = false;
 
     public bool IsOpen { get; private set; } = false;
     public int SelectedX => _selectedX;
@@ -37,6 +42,8 @@ public class Inventory : GameObject
         {
             _selectedX = 0;
             _selectedY = 0;
+            _focus = FocusPanel.Inventory;
+            _isFocused = true;
         }
     }
 
@@ -56,10 +63,74 @@ public class Inventory : GameObject
     {
         if (!IsOpen) return;
 
-        if (Input.IsKeyDown(ConsoleKey.A)) _selectedX = (_selectedX - 1 + k_SlotCountX) % k_SlotCountX;
-        else if (Input.IsKeyDown(ConsoleKey.D)) _selectedX = (_selectedX + 1) % k_SlotCountX;
-        else if (Input.IsKeyDown(ConsoleKey.W)) _selectedY = (_selectedY - 1 + k_SlotCountY) % k_SlotCountY;
-        else if (Input.IsKeyDown(ConsoleKey.S)) _selectedY = (_selectedY + 1) % k_SlotCountY;
+        switch (_focus)
+        {
+            case FocusPanel.Inventory: 
+                UpdateInventory(); 
+                break;
+            case FocusPanel.Craft: 
+                Craft.HandleInput(this);
+                _isFocused = false;
+                break;
+            case FocusPanel.Equipment: 
+                Equipment.HandleInput(this);
+                _isFocused = false;
+                break;
+        }
+    }
+
+    private void UpdateInventory()
+    {
+        _isFocused = true;
+
+        if (Input.IsKeyDown(ConsoleKey.A))
+            _selectedX = (_selectedX - 1 + k_SlotCountX) % k_SlotCountX;
+        else if (Input.IsKeyDown(ConsoleKey.D))
+            _selectedX = (_selectedX + 1) % k_SlotCountX;
+        else if (Input.IsKeyDown(ConsoleKey.S))
+        {
+            if (_selectedY == 7)
+            {
+                if (_selectedX < 10)
+                {
+                    _focus = FocusPanel.Craft;
+                    Craft.SetSelected(0, 0);
+                }
+                else
+                {
+                    _focus = FocusPanel.Equipment;
+                    Equipment.SetSelected(0);
+                }
+            }
+            _selectedY = (_selectedY + 1) % k_SlotCountY;
+        }
+        else if (Input.IsKeyDown(ConsoleKey.W))
+        {
+            if (_selectedY > 0)
+            {
+                _selectedY--;
+            }
+            else
+            {
+                if (_selectedX < 6)
+                {
+                    _focus = FocusPanel.Craft;
+                    Craft.SetSelected(0, 0);
+                }
+                else
+                {
+                    _focus = FocusPanel.Equipment;
+                    Equipment.SetSelected(0);
+                }
+            }
+        }
+    }
+
+    public void ReturnToInventory()
+    {
+        _focus = FocusPanel.Inventory;
+        _selectedX = 0;
+        _selectedY = 0;
     }
 
     public override void Draw(ScreenBuffer buffer)
@@ -80,7 +151,7 @@ public class Inventory : GameObject
         {
             for (int x = 0; x < k_SlotCountX; x++)
             {
-                bool selected = (x == _selectedX && y == _selectedY);
+                bool selected = (x == _selectedX && y == _selectedY && _isFocused);
                 bool isQuick = (y == 0 && x >= 0 && x < 6);
                 _slots[y, x].Draw(buffer, k_SlotStartX + x, k_SlotStartY + y, selected, isQuick);
             }
