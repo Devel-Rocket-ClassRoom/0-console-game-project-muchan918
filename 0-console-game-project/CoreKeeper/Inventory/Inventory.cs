@@ -70,6 +70,8 @@ public class Inventory : GameObject
     {
         if (!IsOpen) return;
 
+        Craft.Update(deltaTime);
+
         switch (_focus)
         {
             case FocusPanel.Inventory: 
@@ -197,10 +199,13 @@ public class Inventory : GameObject
             }
         }
 
-        var selectedItem = _slots[_selectedY, _selectedX];
-        if (!selectedItem.IsEmpty && selectedItem.Item is IInventoryItem inv)
-            buffer.WriteTextCentered(7 * 2 + 1,
-                $"{selectedItem.Item!.Name} x{inv.Count}", ConsoleColor.White, ConsoleColor.DarkGray);
+        if (_focus == FocusPanel.Inventory)
+        {
+            var selectedItem = _slots[_selectedY, _selectedX];
+            if (!selectedItem.IsEmpty && selectedItem.Item is IInventoryItem inv)
+                buffer.WriteTextCentered(7 * 2 + 1,
+                    $"{selectedItem.Item!.Name} x{inv.Count}", ConsoleColor.White, ConsoleColor.DarkGray);
+        }
     }
 
     // 맵과 동일한 방식 - 타일 1개를 스크린 4×2로 그리기
@@ -241,5 +246,37 @@ public class Inventory : GameObject
                 }
 
         // 인벤토리 가득 참 (추후 처리)
+    }
+
+    // 재료 보유 확인
+    public bool HasItem(string itemName, int count)
+    {
+        int total = 0;
+        for (int y = 0; y < k_SlotCountY; y++)
+            for (int x = 0; x < k_SlotCountX; x++)
+            {
+                var slot = _slots[y, x];
+                if (!slot.IsEmpty && slot.Item!.Name == itemName && slot.Item is IInventoryItem inv)
+                    total += inv.Count;
+            }
+        return total >= count;
+    }
+
+    // 재료 소모
+    public void ConsumeItem(string itemName, int count)
+    {
+        int remaining = count;
+        for (int y = 0; y < k_SlotCountY && remaining > 0; y++)
+            for (int x = 0; x < k_SlotCountX && remaining > 0; x++)
+            {
+                var slot = _slots[y, x];
+                if (!slot.IsEmpty && slot.Item!.Name == itemName && slot.Item is IInventoryItem inv)
+                {
+                    int take = Math.Min(inv.Count, remaining);
+                    inv.Count -= take;
+                    remaining -= take;
+                    if (inv.Count <= 0) slot.Clear();
+                }
+            }
     }
 }

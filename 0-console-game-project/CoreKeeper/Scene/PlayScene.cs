@@ -7,6 +7,7 @@ public class PlayScene : Scene
     private Player player;
     private QuickSlot quickSlot;
     private SpawnManager spawnManager;
+    private HpBar hpBar;
 
     public override void Draw(ScreenBuffer buffer)
     {
@@ -32,6 +33,9 @@ public class PlayScene : Scene
         spawnManager.Register<Slime>();
         spawnManager.Register<Mushroom>();
         spawnManager.SpawnAll();
+
+        hpBar = new HpBar(this, player);
+        AddGameObject(hpBar);
     }
 
     public override void Unload()
