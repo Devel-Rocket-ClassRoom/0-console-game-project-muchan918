@@ -26,6 +26,7 @@ public class WoodPickaxe : Item, IInventoryItem, IEquippable, ICraftable
     public override void Update(float deltaTime) { }
     public override void Draw(ScreenBuffer buffer) { }
     public override void Use(Player player) { }
+    public ConsoleColor Color => ConsoleColor.DarkYellow;
 
     public override void DrawIcon(int tx, int ty, ScreenBuffer buffer)
     {

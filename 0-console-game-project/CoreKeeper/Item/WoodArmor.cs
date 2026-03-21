@@ -11,6 +11,7 @@ public class WoodArmor : Item, IInventoryItem, IEquippable, ICraftable
     public EquipType EquipType => EquipType.Armor;
     public void Equip(Player player) { }
     public void Unequip(Player player) { }
+    public ConsoleColor Color => ConsoleColor.DarkYellow;
 
     // ICraftable
     public (string itemName, int count)[] Recipe => new[]

@@ -161,4 +161,9 @@ public class PlayerCraft : GameObject
             }
         }    
     }
+
+    public void LoseFocus()
+    {
+        _isFocused = false;
+    }
 }

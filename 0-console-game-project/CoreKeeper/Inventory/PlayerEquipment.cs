@@ -13,8 +13,21 @@ public class PlayerEquipment : GameObject
         (13, 3), // RightHand
     };
 
+    // 각 슬롯에 대응하는 EquipType
+    private static readonly EquipType[] k_SlotTypes =
+    {
+        EquipType.Helmet,
+        EquipType.Armor,
+        EquipType.RightHand,
+    };
+
     private int _selectedIndex = 0;
     private bool _isFocused = false;
+
+    // 메시지 출력 타이머
+    private string _message = "";
+    private float _messageTimer = 0f;
+    private const float k_MessageDuration = 2f;
 
     private Slot[] _slots;
     private readonly Player _player;
@@ -29,6 +42,60 @@ public class PlayerEquipment : GameObject
         _player = player;
     }
 
+    public Slot GetSlot(EquipSlot slot) => _slots[(int)slot];
+    public EquipType GetSlotType() => k_SlotTypes[_selectedIndex];
+    public int SelectedIndex => _selectedIndex;
+
+    public void SetSelected(int index)
+    {
+        _selectedIndex = Math.Clamp(index, 0, k_SlotCount - 1);
+        _isFocused = true;
+    }
+
+    public void ShowMessage(string message)
+    {
+        _message = message;
+        _messageTimer = k_MessageDuration;
+    }
+
+    // 장착 처리 - Inventory에서 아이템 선택 후 호출
+    public void TryEquip(Item item)
+    {
+        if (item is not IEquippable equippable)
+        {
+            ShowMessage("Cannot equip this item.");
+            return;
+        }
+
+        if (equippable.EquipType != k_SlotTypes[_selectedIndex])
+        {
+            ShowMessage("Cannot equip this item.");
+            return;
+        }
+
+        // 기존 장착 아이템 해제
+        var currentSlot = _slots[_selectedIndex];
+        if (!currentSlot.IsEmpty && currentSlot.Item is IEquippable old)
+            old.Unequip(_player);
+
+        // 장착
+        equippable.Equip(_player);
+        currentSlot.SetItem(item);
+    }
+
+    // 장착 해제 - 스페이스바로 빈 슬롯 선택 시
+    public void TryUnequip()
+    {
+        var slot = _slots[_selectedIndex];
+        if (slot.IsEmpty) return;
+
+        if (slot.Item is IEquippable equippable)
+            equippable.Unequip(_player);
+
+        _player.Inventory.AddItem(slot.Item!);
+        slot.Clear();
+    }
+
     public void HandleInput(Inventory inventory)
     {
         _isFocused = true;
@@ -41,6 +108,20 @@ public class PlayerEquipment : GameObject
         {
             _isFocused = false;
             inventory.ReturnToInventory();
+        }
+
+        if (Input.IsKeyDown(ConsoleKey.Spacebar))
+        {
+            var slot = _slots[_selectedIndex];
+            if (slot.IsEmpty)
+            {
+                // 빈 슬롯 → 인벤토리에서 장착할 아이템 선택
+                _isFocused = false;
+                inventory.StartEquipping(_selectedIndex);
+            }
+            else
+                // 이미 장착된 아이템 → 해제
+                TryUnequip();
         }
     }
 
@@ -58,17 +139,30 @@ public class PlayerEquipment : GameObject
         int sx = 12 * 4;
         int sy = 3 * 2;
         _player.DrawAt(buffer, sx, sy, ConsoleColor.DarkGray);
+
+        if (!_isFocused) return;
+
+        // 메시지 또는 슬롯 정보 출력
+        if (_messageTimer > 0)
+            buffer.WriteTextCentered(7 * 2 + 1, _message, ConsoleColor.Red, ConsoleColor.DarkGray);
+        else
+        {
+            string slotName = ((EquipSlot)_selectedIndex).ToString();
+            var slot = _slots[_selectedIndex];
+            string itemName = slot.IsEmpty ? "Empty" : slot.Item!.Name;
+            buffer.WriteTextCentered(7 * 2 + 1,
+                $"{slotName} | {itemName}", ConsoleColor.Yellow, ConsoleColor.DarkGray);
+        }
     }
 
     public override void Update(float deltaTime)
     {
-        
+        if (_messageTimer > 0)
+            _messageTimer -= deltaTime;
     }
 
-    public Slot GetSlot(EquipSlot slot) => _slots[(int)slot];
-
-    public void SetSelected(int index)
+    public void LoseFocus()
     {
-        _selectedIndex = Math.Clamp(index, 0, k_SlotCount - 1);
+        _isFocused = false;
     }
 }

@@ -30,6 +30,10 @@ public class Inventory : GameObject
     private int _grabbedY = -1;
     private bool IsGrabbing => _grabbedX != -1;
 
+    // 장착 모드 - Equipment 슬롯 인덱스 (-1이면 비활성)
+    private int _equippingSlotIndex = -1;
+    private bool IsEquipping => _equippingSlotIndex != -1;
+
     public bool IsOpen { get; private set; } = false;
     public int SelectedX => _selectedX;
 
@@ -48,9 +52,12 @@ public class Inventory : GameObject
             _selectedX = 0;
             _selectedY = 0;
             _focus = FocusPanel.Inventory;
+            Craft.LoseFocus();
+            Equipment.LoseFocus();
             _isFocused = true;
             _grabbedX = -1;
             _grabbedY = -1;
+            _equippingSlotIndex = -1;
         }
     }
 
@@ -71,6 +78,7 @@ public class Inventory : GameObject
         if (!IsOpen) return;
 
         Craft.Update(deltaTime);
+        Equipment.Update(deltaTime);
 
         switch (_focus)
         {
@@ -105,7 +113,7 @@ public class Inventory : GameObject
                     _focus = FocusPanel.Craft;
                     Craft.SetSelected(0, 0);
                 }
-                else
+                else if(!IsEquipping)
                 {
                     _focus = FocusPanel.Equipment;
                     Equipment.SetSelected(0);
@@ -119,7 +127,7 @@ public class Inventory : GameObject
             {
                 _selectedY--;
             }
-            else
+            else if (!IsEquipping) // 장착 모드에서는 패널 전환 막기
             {
                 if (_selectedX < 6)
                 {
@@ -136,8 +144,34 @@ public class Inventory : GameObject
 
         if (Input.IsKeyDown(ConsoleKey.Spacebar))
         {
-            HandleSwap();
+            if (IsEquipping)
+                HandleEquip();
+            else
+                HandleSwap();
         }
+    }
+
+    private void HandleEquip()
+    {
+        var slot = _slots[_selectedY, _selectedX];
+
+        if (slot.IsEmpty)
+        {
+            Equipment.ShowMessage("Cannot equip this item.");
+            _equippingSlotIndex = -1;
+            _focus = FocusPanel.Equipment;
+            return;
+        }
+
+        Equipment.TryEquip(slot.Item!);
+
+        // 장착 성공 시 인벤토리에서 제거
+        var equipSlot = Equipment.GetSlot((PlayerEquipment.EquipSlot)_equippingSlotIndex);
+        if (!equipSlot.IsEmpty && equipSlot.Item == slot.Item)
+            slot.Clear();
+
+        _equippingSlotIndex = -1;
+        _focus = FocusPanel.Equipment;
     }
 
     private void HandleSwap()
@@ -164,7 +198,15 @@ public class Inventory : GameObject
 
         _grabbedX = -1;
         _grabbedY = -1;
+    }
 
+    public void StartEquipping(int equipSlotIndex)
+    {
+        _equippingSlotIndex = equipSlotIndex;
+        _focus = FocusPanel.Inventory;
+        _selectedX = 0;
+        _selectedY = 0;
+        _isFocused = true;
     }
 
     public void ReturnToInventory()
@@ -187,7 +229,7 @@ public class Inventory : GameObject
         Craft.Draw(buffer);
         Equipment.Draw(buffer);
 
-        // 슬롯 (4,6) ~ (16,7)
+        // 슬롯 (4,5) ~ (16,7)
         for (int y = 0; y < k_SlotCountY; y++)
         {
             for (int x = 0; x < k_SlotCountX; x++)
@@ -195,7 +237,8 @@ public class Inventory : GameObject
                 bool selected = (x == _selectedX && y == _selectedY && _isFocused);
                 bool isQuick = (y == 0 && x >= 0 && x < 6);
                 bool isGrabbed = (x == _grabbedX && y == _grabbedY);
-                _slots[y, x].Draw(buffer, k_SlotStartX + x, k_SlotStartY + y, selected, isQuick, isGrabbed);
+                bool isEquipTarget = IsEquipping && selected;
+                _slots[y, x].Draw(buffer, k_SlotStartX + x, k_SlotStartY + y, selected, isQuick, isGrabbed || isEquipTarget);
             }
         }
 

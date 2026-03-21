@@ -54,32 +54,40 @@ public class Player : GameObject, IAttacker, IDefender
     {
         var equip = Inventory.Equipment;
 
-        bool hasHelmet = !equip.GetSlot(PlayerEquipment.EquipSlot.Helmet).IsEmpty;
-        bool hasArmor = !equip.GetSlot(PlayerEquipment.EquipSlot.Armor).IsEmpty;
-        bool hasWeapon = !equip.GetSlot(PlayerEquipment.EquipSlot.RightHand).IsEmpty;
+        var helmetSlot = equip.GetSlot(PlayerEquipment.EquipSlot.Helmet);
+        var armorSlot = equip.GetSlot(PlayerEquipment.EquipSlot.Armor);
+        var weaponSlot = equip.GetSlot(PlayerEquipment.EquipSlot.RightHand);
+
+        bool hasHelmet = !helmetSlot.IsEmpty;
+        bool hasArmor = !armorSlot.IsEmpty;
+        bool hasWeapon = !weaponSlot.IsEmpty;
+
+        ConsoleColor helmetColor = hasHelmet && helmetSlot.Item is IEquippable h ? h.Color : ConsoleColor.Yellow;
+        ConsoleColor armorColor = hasArmor && armorSlot.Item is IEquippable a ? a.Color : ConsoleColor.DarkGray;
+        ConsoleColor weaponColor = hasWeapon && weaponSlot.Item is IEquippable w ? w.Color : ConsoleColor.DarkGray;
 
         // 머리
         if (hasHelmet)
         {
-            buffer.SetCell(sx, sy, '▐', ConsoleColor.Yellow, bg); // 모자 왼쪽
-            buffer.SetCell(sx + 2, sy, '▌', ConsoleColor.Yellow, bg); // 모자 오른쪽
+            buffer.SetCell(sx, sy, '▐', helmetColor, bg);
+            buffer.SetCell(sx + 2, sy, '▌', helmetColor, bg);
         }
-        buffer.SetCell(sx + 1, sy, '☺', ConsoleColor.Yellow, bg); // 얼굴
+        buffer.SetCell(sx + 1, sy, '☺', ConsoleColor.Yellow, bg);
 
         // 몸통
         if (hasArmor)
         {
-            buffer.SetCell(sx, sy + 1, '░', ConsoleColor.DarkGray, bg); // 갑옷 왼쪽
-            buffer.SetCell(sx + 2, sy + 1, '/', ConsoleColor.White, bg); // 갑옷 오른쪽
+            buffer.SetCell(sx, sy + 1, '▐', armorColor, bg);
+            buffer.SetCell(sx + 2, sy + 1, '▌', armorColor, bg);
         }
-        buffer.SetCell(sx + 1, sy + 1, '█', ConsoleColor.Cyan, bg); // 몸통
+        buffer.SetCell(sx + 1, sy + 1, '█', ConsoleColor.Cyan, bg);
 
         // 오른손 장비
+        buffer.SetCell(sx + 3, sy + 1, '/', ConsoleColor.White, bg); // 기본 손 항상 출력
         if (hasWeapon)
-            buffer.SetCell(sx + 3, sy + 1, '/', ConsoleColor.White, bg); // 무기
-        else
-            buffer.SetCell(sx + 3, sy + 1, '/', ConsoleColor.White, bg); // 맨손
+            buffer.SetCell(sx + 3, sy, '|', weaponColor, bg); // 무기 장착 시 위에 추가
     }
+
 
     public override void Update(float deltaTime)
     {
