@@ -9,14 +9,16 @@ public class Slot
     public void SetItem(Item item) => Item = item;
     public void Clear() => Item = null;
 
-    public void Draw(ScreenBuffer buffer, int tx, int ty, bool selected = false, bool isQuick = false)
+    public void Draw(ScreenBuffer buffer, int tx, int ty, 
+        bool selected = false, bool isQuick = false, bool isGrabbed = false)
     {
         int sx = tx * 4;
         int sy = ty * 2;
 
         ConsoleColor border = isQuick ? ConsoleColor.Black : ConsoleColor.Gray;
         border = selected ? ConsoleColor.Green : border;
-        
+        border = isGrabbed ? ConsoleColor.Red : border;
+
         // 배경 먼저 채우기
         for (int dy = 0; dy < 2; dy++)
             for (int dx = 0; dx < 4; dx++)

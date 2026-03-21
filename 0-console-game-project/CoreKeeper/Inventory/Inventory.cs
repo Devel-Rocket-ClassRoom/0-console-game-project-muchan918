@@ -25,6 +25,11 @@ public class Inventory : GameObject
     private int _selectedY = 0;
     private bool _isFocused = false;
 
+    // 아이템 교환용 - 잡힌 슬롯 좌표 (-1이면 없음)
+    private int _grabbedX = -1;
+    private int _grabbedY = -1;
+    private bool IsGrabbing => _grabbedX != -1;
+
     public bool IsOpen { get; private set; } = false;
     public int SelectedX => _selectedX;
 
@@ -44,6 +49,8 @@ public class Inventory : GameObject
             _selectedY = 0;
             _focus = FocusPanel.Inventory;
             _isFocused = true;
+            _grabbedX = -1;
+            _grabbedY = -1;
         }
     }
 
@@ -124,6 +131,38 @@ public class Inventory : GameObject
                 }
             }
         }
+
+        if (Input.IsKeyDown(ConsoleKey.Spacebar))
+        {
+            HandleSwap();
+        }
+    }
+
+    private void HandleSwap()
+    {
+        if (!IsGrabbing)
+        {
+            _grabbedX = _selectedX;
+            _grabbedY = _selectedY;
+            return;
+        }
+
+        if (_grabbedX == _selectedX && _grabbedY == _selectedY)
+        {
+            // 같은 슬롯 → 취소
+            _grabbedX = -1;
+            _grabbedY = -1;
+            return;
+        }
+
+        // 교환
+        var tmp = _slots[_grabbedY, _grabbedX].Item;
+        _slots[_grabbedY, _grabbedX].Item = _slots[_selectedY, _selectedX].Item;
+        _slots[_selectedY, _selectedX].Item = tmp;
+
+        _grabbedX = -1;
+        _grabbedY = -1;
+
     }
 
     public void ReturnToInventory()
@@ -153,7 +192,8 @@ public class Inventory : GameObject
             {
                 bool selected = (x == _selectedX && y == _selectedY && _isFocused);
                 bool isQuick = (y == 0 && x >= 0 && x < 6);
-                _slots[y, x].Draw(buffer, k_SlotStartX + x, k_SlotStartY + y, selected, isQuick);
+                bool isGrabbed = (x == _grabbedX && y == _grabbedY);
+                _slots[y, x].Draw(buffer, k_SlotStartX + x, k_SlotStartY + y, selected, isQuick, isGrabbed);
             }
         }
 
