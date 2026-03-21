@@ -14,7 +14,6 @@ public class Inventory : GameObject
     private const int k_SlotStartY = 5;
     private const int k_SlotCountX = 12;
     private const int k_SlotCountY = 2;
-    private const int k_QuickSlotCount = 6; // 0~5번은 QuickSlot 영역
 
     // 인벤토리 선택 좌표
     private int _selectedX = 0;

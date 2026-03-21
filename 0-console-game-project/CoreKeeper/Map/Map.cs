@@ -28,11 +28,14 @@ public class Map : GameObject
             for (int tx = 0; tx < _tileWidth; tx++)
                 _tiles[ty, tx] = new Tile(TileType.Ground);
 
-        // 2단계: Soil 군집
+        // 2단계: Soil + Stone군집
         for (int ty = 0; ty < _tileHeight; ty++)
             for (int tx = 0; tx < _tileWidth; tx++)
                 if (_random.NextDouble() < 0.04f)
-                    Spread(tx, ty, 5, TileType.Soil, 0.6f);
+                {
+                    TileType type = _random.NextDouble() < 0.75 ? TileType.Soil : TileType.Stone;
+                    Spread(tx, ty, 5, type, 0.6f);
+                }
 
         // 3단계: Wood 군집
         for (int ty = 0; ty < _tileHeight; ty++)
@@ -144,6 +147,24 @@ public class Map : GameObject
         return broken;
     }
 
+    public bool MineTile(int tileX, int tileY, int damage)
+    {
+        if (!InBounds(tileX, tileY)) return false;
+        var tile = _tiles[tileY, tileX];
+        if (!tile.IsMinable) return false;
+
+        int newHp = tile.Hp - damage;
+
+        if (newHp <= 0)
+        {
+            _tiles[tileY, tileX] = new Tile(TileType.Ground);
+            return true;
+        }
+
+        _tiles[tileY, tileX] = new Tile(tile.Type, newHp);
+        return false;
+    }
+
     // ── 타일 좌표 → 스크린 좌표 변환 ─────
     // 외부에서 쓸 수 있도록 public
     public (int sx, int sy) TileToScreen(int tileX, int tileY, ScreenBuffer buffer)
@@ -157,5 +178,11 @@ public class Map : GameObject
         int sx = (tileX - startTileX) * 4;
         int sy = (tileY - startTileY) * 2;
         return (sx, sy);
+    }
+
+    public TileType GetTileType(int tileX, int tileY)
+    {
+        if (!InBounds(tileX, tileY)) return TileType.Ground;
+        return _tiles[tileY, tileX].Type;
     }
 }

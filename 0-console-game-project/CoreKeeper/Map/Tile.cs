@@ -6,33 +6,52 @@ public enum TileType
     Ground,
     Wood,
     Soil,
+    Stone
 }
 
-public struct Tile
+public class Tile
 {
     private TileType _type;
+    private int _hp;
 
     public TileType Type => _type;
+    public int Hp => _hp;
 
-    public readonly bool IsMovable => Type == TileType.Ground;
-    public readonly bool IsMinable => Type == TileType.Wood || Type == TileType.Soil;
+    public bool IsMovable => Type == TileType.Ground;
+    public bool IsMinable => Type != TileType.Ground;
+    public bool IsAlive => _hp > 0;
 
     public Tile(TileType type)
     {
         _type = type;
+        _hp = _type switch
+        {
+            TileType.Wood => 2,
+            TileType.Soil => 3,
+            TileType.Stone => 5,
+            _ => 0
+        };
     }
 
-    public readonly char DisplayChar => Type switch
+    public Tile(TileType type, int hp)
+    {
+        _type = type;
+        _hp = hp;
+    }
+
+    public char DisplayChar => Type switch
     {
         TileType.Wood => '▨',
         TileType.Soil => '▩',
+        TileType.Stone => '▦',
         _ => ' ',
     };
 
-    public readonly ConsoleColor ForeColor => Type switch
+    public ConsoleColor ForeColor => Type switch
     {
         TileType.Wood => ConsoleColor.DarkYellow,
         TileType.Soil => ConsoleColor.DarkGreen,
+        TileType.Stone => ConsoleColor.Gray,
         _ => ConsoleColor.DarkGray,
     };
 }

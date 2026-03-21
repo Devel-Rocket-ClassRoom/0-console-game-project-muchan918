@@ -24,6 +24,7 @@ public class Player : GameObject, IAttacker, IDefender
 
     // IAttacker
     public int AttackDamage { get; private set; } = 5;
+    public int MiningDamage { get; private set; } = 1;
 
     // IDefender
     public int MaxHp { get; private set; } = 20;
@@ -150,17 +151,22 @@ public class Player : GameObject, IAttacker, IDefender
 
     private void Mine(int tileX, int tileY)
     {
-        TileType broken = _map.BreakTile(tileX, tileY);
+        TileType tileType = _map.GetTileType(tileX, tileY); // 먼저 타입 저장
+        bool broken = _map.MineTile(tileX, tileY, MiningDamage);
 
-        Item? item = broken switch
+        if (broken)
         {
-            TileType.Wood => new WoodItem(Scene, _map, tileX, tileY),
-            TileType.Soil => new SoilItem(Scene, _map, tileX, tileY),
-            _ => null,
-        };
+            Item? item = tileType switch
+            {
+                TileType.Wood => new WoodItem(Scene, _map, tileX, tileY),
+                TileType.Soil => new SoilItem(Scene, _map, tileX, tileY),
+                TileType.Stone => new StoneItem(Scene, _map, tileX, tileY),
+                _ => null,
+            };
 
-        if (item != null)
-            Scene.AddGameObject(item);
+            if (item != null)
+                Scene.AddGameObject(item);
+        }
     }
 
     public void Attack(IDefender target)
