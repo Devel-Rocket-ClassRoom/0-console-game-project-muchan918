@@ -1,5 +1,6 @@
-﻿using System;
-using Framework.Engine;
+﻿using Framework.Engine;
+using System;
+using System.Numerics;
 
 public class Inventory : GameObject
 {
@@ -24,6 +25,9 @@ public class Inventory : GameObject
 
     private Slot[,] _slots;
 
+    public PlayerCraft Craft { get; private set; }
+    public PlayerEquipment Equipment { get; private set; }
+
     public Slot GetSlot(int y, int x) => _slots[y, x];
 
     public void Toggle()
@@ -36,13 +40,16 @@ public class Inventory : GameObject
         }
     }
 
-    public Inventory(Scene scene) : base(scene)
+    public Inventory(Scene scene, Player player) : base(scene)
     {
         Name = "Inventory";
         _slots = new Slot[k_SlotCountY, k_SlotCountX];
         for (int y = 0; y < k_SlotCountY; y++)
             for (int x = 0; x < k_SlotCountX; x++)
                 _slots[y, x] = new Slot();
+
+        Craft = new PlayerCraft(scene);
+        Equipment = new PlayerEquipment(scene, player);
     }
 
     public override void Update(float deltaTime)
@@ -64,7 +71,11 @@ public class Inventory : GameObject
             for (int tx = k_StartTileX; tx < k_EndTileX; tx++)
                 DrawTile(buffer, tx, ty, ' ', ConsoleColor.White, ConsoleColor.DarkGray);
 
-        // 슬롯 (4,6) ~ (16,8)
+        // 하위 패널 출력
+        Craft.Draw(buffer);
+        Equipment.Draw(buffer);
+
+        // 슬롯 (4,6) ~ (16,7)
         for (int y = 0; y < k_SlotCountY; y++)
         {
             for (int x = 0; x < k_SlotCountX; x++)

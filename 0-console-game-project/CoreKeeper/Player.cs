@@ -39,28 +39,46 @@ public class Player : GameObject, IAttacker, IDefender
         _position = (startX, startY);
         _moveTimer = _moveInterval;
 
-        Inventory = new Inventory(scene);
+        Inventory = new Inventory(scene, this);
         scene.AddGameObject(Inventory);
     }
 
     public override void Draw(ScreenBuffer buffer)
     {
-        // 항상 화면 중앙 타일에 고정
         int cx = (buffer.Width / 4 / 2) * 4;
         int cy = (buffer.Height / 2 / 2) * 2;
+        DrawAt(buffer, cx, cy, ConsoleColor.Black);
+    }
 
-        // 타일 4×2 안에 캐릭터 표현
+    public void DrawAt(ScreenBuffer buffer, int sx, int sy, ConsoleColor bg)
+    {
+        var equip = Inventory.Equipment;
+
+        bool hasHelmet = !equip.GetSlot(PlayerEquipment.EquipSlot.Helmet).IsEmpty;
+        bool hasArmor = !equip.GetSlot(PlayerEquipment.EquipSlot.Armor).IsEmpty;
+        bool hasWeapon = !equip.GetSlot(PlayerEquipment.EquipSlot.RightHand).IsEmpty;
+
         // 머리
-        //buffer.SetCell(cx, cy, '▐', ConsoleColor.Yellow, ConsoleColor.Black); // 머리 테두리
-        buffer.SetCell(cx + 1, cy, '☺', ConsoleColor.Yellow, ConsoleColor.Black); // 얼굴 (모자 장착 시 교체)
-        //buffer.SetCell(cx + 2, cy, '▌', ConsoleColor.Yellow, ConsoleColor.Black); // 머리 테두리
-        //buffer.SetCell(cx + 3, cy, '░', ConsoleColor.DarkGray, ConsoleColor.Black); // 여백
+        if (hasHelmet)
+        {
+            buffer.SetCell(sx, sy, '▐', ConsoleColor.Yellow, bg); // 모자 왼쪽
+            buffer.SetCell(sx + 2, sy, '▌', ConsoleColor.Yellow, bg); // 모자 오른쪽
+        }
+        buffer.SetCell(sx + 1, sy, '☺', ConsoleColor.Yellow, bg); // 얼굴
 
-        // 몸통 + 손
-        //buffer.SetCell(cx, cy + 1, '░', ConsoleColor.DarkGray, ConsoleColor.Black); // 여백
-        buffer.SetCell(cx + 1, cy + 1, '█', ConsoleColor.Cyan, ConsoleColor.Black); // 몸통 (갑옷 시 색깔 변경)
-        buffer.SetCell(cx + 2, cy + 1, '/', ConsoleColor.DarkGray, ConsoleColor.Black); // 여백
-        //buffer.SetCell(cx + 3, cy + 1, '/', ConsoleColor.White, ConsoleColor.Black); // 손 (무기 교체)
+        // 몸통
+        if (hasArmor)
+        {
+            buffer.SetCell(sx, sy + 1, '░', ConsoleColor.DarkGray, bg); // 갑옷 왼쪽
+            buffer.SetCell(sx + 2, sy + 1, '/', ConsoleColor.White, bg); // 갑옷 오른쪽
+        }
+        buffer.SetCell(sx + 1, sy + 1, '█', ConsoleColor.Cyan, bg); // 몸통
+
+        // 오른손 장비
+        if (hasWeapon)
+            buffer.SetCell(sx + 3, sy + 1, '/', ConsoleColor.White, bg); // 무기
+        else
+            buffer.SetCell(sx + 3, sy + 1, '/', ConsoleColor.White, bg); // 맨손
     }
 
     public override void Update(float deltaTime)
