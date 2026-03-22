@@ -14,6 +14,7 @@ public class Map : GameObject
     // viewPosition은 월드 좌표 기준
     private (int X, int Y) _viewPosition = (100, 50);
     public (int X, int Y) ViewPosition => _viewPosition;
+    public (int X, int Y) BossSpawnPoint { get; private set; }
 
     private readonly Tile[,] _tiles; // [tileY, tileX]
 
@@ -50,6 +51,57 @@ public class Map : GameObject
             for (int tx = cx - 3; tx <= cx + 3; tx++)
                 if (tx >= 0 && ty >= 0 && tx < _tileWidth && ty < _tileHeight)
                     _tiles[ty, tx] = new Tile(TileType.Ground);
+
+        // 5단계: 보스 구역 설정 (맵 끝쪽 랜덤)
+        var random2 = new Random();
+        (int bx, int by) = GetBossSpawnPoint(random2);
+        BossSpawnPoint = (bx, by);
+        ClearBossArea(bx, by);
+    }
+
+    private (int bx, int by) GetBossSpawnPoint(Random random)
+    {
+        // 맵 4개 끝 중 하나 선택
+        int edge = random.Next(4);
+        int bx, by;
+        int margin = 15; // 끝에서 15타일 안쪽
+
+        switch (edge)
+        {
+            case 0: // 위쪽
+                bx = random.Next(margin, _tileWidth - margin);
+                by = margin;
+                break;
+            case 1: // 아래쪽
+                bx = random.Next(margin, _tileWidth - margin);
+                by = _tileHeight - margin;
+                break;
+            case 2: // 왼쪽
+                bx = margin;
+                by = random.Next(margin, _tileHeight - margin);
+                break;
+            default: // 오른쪽
+                bx = _tileWidth - margin;
+                by = random.Next(margin, _tileHeight - margin);
+                break;
+        }
+        return (bx, by);
+    }
+
+    private void ClearBossArea(int cx, int cy)
+    {
+        int radius = 10; // 20x20 범위
+        for (int ty = cy - radius; ty <= cy + radius; ty++)
+            for (int tx = cx - radius; tx <= cx + radius; tx++)
+                if (InBounds(tx, ty))
+                    _tiles[ty, tx] = new Tile(TileType.Ground);
+    }
+
+    public bool IsNearBoss(int tx, int ty)
+    {
+        int radius = 12;
+        return Math.Abs(tx - BossSpawnPoint.X) <= radius &&
+               Math.Abs(ty - BossSpawnPoint.Y) <= radius;
     }
 
     private void Spread(int tx, int ty, int depth, TileType type, float spreadChance)

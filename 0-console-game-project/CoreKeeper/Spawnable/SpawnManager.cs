@@ -55,7 +55,7 @@ public class SpawnManager : GameObject
         {
             tx = _random.Next(0, _map.TileWidth);
             ty = _random.Next(0, _map.TileHeight);
-        } while (!_map.IsMovable(tx, ty) || IsNearCenter(tx, ty, cx, cy));
+        } while (!_map.IsMovable(tx, ty) || IsNearCenter(tx, ty, cx, cy) || _map.IsNearBoss(tx, ty));
         return (tx, ty);
     }
 

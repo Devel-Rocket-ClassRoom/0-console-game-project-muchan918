@@ -10,11 +10,12 @@ public class PlayScene : Scene
     private HpBar hpBar;
     private WorkbenchUI workbenchUI;
     private BoxUI boxUI;
-    private Portal portal;
 
-    public event Action? BossSceneRequested;
+    public event Action? GameOverRequested;
+    public event Action? GameClearRequested;
 
-    public void RequestBossScene() => BossSceneRequested?.Invoke();
+    public void RequestGameOver() => GameOverRequested?.Invoke();
+    public void RequestGameClear() => GameClearRequested?.Invoke();
 
     public override void Draw(ScreenBuffer buffer)
     {
@@ -32,9 +33,14 @@ public class PlayScene : Scene
 
     public override void Load()
     {
+        Slime.s_CurrentCount = 0;
+        Mushroom.s_CurrentCount = 0;
+        SpawnerBox.s_CurrentCount = 0;
+        Boss.s_CurrentCount = 0;
+
         map = new Map(this);
         AddGameObject(map);
-        
+
         player = new Player(this, map, 100, 50);
         AddGameObject(player);
 
@@ -60,11 +66,14 @@ public class PlayScene : Scene
         boxUI = new BoxUI(this, player.Inventory);
         AddGameObject(boxUI);
         player.SetBoxUI(boxUI);
+
+        var boss = new Boss(this, map, map.BossSpawnPoint.X, map.BossSpawnPoint.Y);
+        AddGameObject(boss);
     }
 
     public override void Unload()
     {
-        
+
     }
 
     public override void Update(float deltaTime)
@@ -80,13 +89,23 @@ public class PlayScene : Scene
             return;
         }
 
+        if (!player.IsAlive)
+            RequestGameOver();
+
         UpdateGameObjects(deltaTime);
         map.SetViewPosition(player.Position.X, player.Position.Y);
     }
 
     public IDefender? FindDefender(int tileX, int tileY)
     {
-        return GetGameObjects<Spawner>()
-            .FirstOrDefault(s => s.TileX == tileX && s.TileY == tileY) as IDefender;
+        var spawner = GetGameObjects<Spawner>()
+        .FirstOrDefault(s => s.TileX == tileX && s.TileY == tileY) as IDefender;
+        if (spawner != null) return spawner;
+
+        // 보스 3x3 범위 체크
+        return GetGameObjects<Boss>()
+                .FirstOrDefault(b =>
+                    tileX >= b.TileX - 1 && tileX < b.TileX + 4 &&
+                    tileY >= b.TileY - 1 && tileY < b.TileY + 4) as IDefender;
     }
 }

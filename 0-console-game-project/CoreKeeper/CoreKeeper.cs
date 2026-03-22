@@ -39,14 +39,36 @@ public class CoreKeeper : GameApp
     private void ChangeToTitle()
     {
         var title = new TitleScene();
-        title.StartRequested += ChangeToPlay;
+        title.StartRequested += ChangeToLoading;
         _scenes.ChangeScene(title);
+    }
+
+    private void ChangeToLoading()
+    {
+        var loading = new LoadingScene();
+        loading.LoadingComplete += ChangeToPlay;
+        _scenes.ChangeScene(loading);
     }
 
     private void ChangeToPlay()
     {
         var play = new PlayScene();
-        //play.PlayAgainRequested += ChangeToTitle;
+        play.GameOverRequested += ChangeToGameOver;
+        play.GameClearRequested += ChangeToGameClear;
         _scenes.ChangeScene(play);
+    }
+
+    private void ChangeToGameOver()
+    {
+        var over = new GameOverScene();
+        over.RestartRequested += ChangeToTitle;
+        _scenes.ChangeScene(over);
+    }
+
+    private void ChangeToGameClear()
+    {
+        var clear = new GameClearScene();
+        clear.RestartRequested += ChangeToTitle;
+        _scenes.ChangeScene(clear);
     }
 }
