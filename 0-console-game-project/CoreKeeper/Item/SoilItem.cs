@@ -58,5 +58,10 @@ public class SoilItem : Item, IDroppable, IInventoryItem
         buffer.SetCell(sx + 2, sy + 1, '▀', ConsoleColor.DarkGreen, ConsoleColor.DarkGray);
     }
 
-    public override void Use(Player player) { }
+    public override void Use(Player player)
+    {
+        var (tx, ty) = player.GetFrontTile();
+        player.GetMap().SetTile(tx, ty, TileType.Soil);
+        ConsumeFromInventory(player);
+    }
 }

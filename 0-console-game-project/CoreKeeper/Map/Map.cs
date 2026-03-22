@@ -83,19 +83,24 @@ public class Map : GameObject
         for (int ty = 0; ty < viewTileH; ty++)
         {
             int tileY = startTileY + ty;
-
+ 
             for (int tx = 0; tx < viewTileW; tx++)
             {
                 int tileX = startTileX + tx;
-
+ 
                 if (!InBounds(tileX, tileY))
                 {
                     DrawOutside(buffer, tx, ty);
                     continue;
                 }
-
+ 
                 Tile tile = _tiles[tileY, tileX];
-                DrawTile(buffer, tx, ty, tile.DisplayChar, tile.ForeColor);
+
+                // Object 타입이면 InstalledItem의 DrawIcon 호출
+                if (tile.Type == TileType.Object && tile.InstalledItem is IInstallable installable)
+                    installable.DrawInstalled(tx, ty, buffer);
+                else
+                    DrawTile(buffer, tx, ty, tile.DisplayChar, tile.ForeColor);
             }
         }
     }
@@ -139,6 +144,14 @@ public class Map : GameObject
         return _tiles[tileY, tileX].IsMinable;
     }
 
+    // Object 타입 설치
+    public void SetTile(int tileX, int tileY, TileType type, Item? installedItem = null)
+    {
+        if (!InBounds(tileX, tileY)) return;
+        if (!_tiles[tileY, tileX].IsMovable) return;
+        _tiles[tileY, tileX] = new Tile(type, installedItem);
+    }
+
     public TileType BreakTile(int tileX, int tileY)
     {
         if (!InBounds(tileX, tileY)) return TileType.Ground;
@@ -147,22 +160,24 @@ public class Map : GameObject
         return broken;
     }
 
-    public bool MineTile(int tileX, int tileY, int damage)
+    // 채굴 - broken 여부와 InstalledItem 반환
+    public (bool broken, Item? installedItem) MineTile(int tileX, int tileY, int damage)
     {
-        if (!InBounds(tileX, tileY)) return false;
+        if (!InBounds(tileX, tileY)) return (false, null);
         var tile = _tiles[tileY, tileX];
-        if (!tile.IsMinable) return false;
+        if (!tile.IsMinable) return (false, null);
 
         int newHp = tile.Hp - damage;
 
         if (newHp <= 0)
         {
+            var installedItem = tile.InstalledItem;
             _tiles[tileY, tileX] = new Tile(TileType.Ground);
-            return true;
+            return (true, installedItem);
         }
 
-        _tiles[tileY, tileX] = new Tile(tile.Type, newHp);
-        return false;
+        _tiles[tileY, tileX] = new Tile(tile.Type, newHp, tile.InstalledItem);
+        return (false, null);
     }
 
     // ── 타일 좌표 → 스크린 좌표 변환 ─────
@@ -184,5 +199,11 @@ public class Map : GameObject
     {
         if (!InBounds(tileX, tileY)) return TileType.Ground;
         return _tiles[tileY, tileX].Type;
+    }
+
+    public Item? GetInstalledItem(int tileX, int tileY)
+    {
+        if (!InBounds(tileX, tileY)) return null;
+        return _tiles[tileY, tileX].InstalledItem;
     }
 }

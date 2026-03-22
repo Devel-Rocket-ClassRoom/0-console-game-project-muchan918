@@ -1,7 +1,7 @@
 ﻿using System;
 using Framework.Engine;
 
-public class WoodSword : Item, IInventoryItem, IEquippable, ICraftable
+public class WoodSword : Item, IInventoryItem, IEquippable, ICraftable, IMotionable
 {
     // IInventoryItem
     public int Count { get; set; } = 1;
@@ -9,8 +9,8 @@ public class WoodSword : Item, IInventoryItem, IEquippable, ICraftable
 
     // IEquippable
     public EquipType EquipType => EquipType.RightHand;
-    public void Equip(Player player) { }
-    public void Unequip(Player player) { }
+    public void Equip(Player player) { player.IncreaseAttackDamage(5); }
+    public void Unequip(Player player) { player.DecreaseAttackDamage(5); }
     public ConsoleColor Color => ConsoleColor.DarkYellow;
 
     // ICraftable
@@ -18,6 +18,8 @@ public class WoodSword : Item, IInventoryItem, IEquippable, ICraftable
     {
         ("Wood", 3)
     };
+
+    public ConsoleColor MotionColor => ConsoleColor.Yellow;
 
     public WoodSword(Scene scene) : base(scene)
     {
@@ -35,4 +37,13 @@ public class WoodSword : Item, IInventoryItem, IEquippable, ICraftable
         buffer.SetCell(sx + 2, sy, '/', ConsoleColor.DarkYellow, ConsoleColor.DarkGray);
         buffer.SetCell(sx + 1, sy + 1, '☌', ConsoleColor.DarkYellow, ConsoleColor.DarkGray);
     }
+
+    public char GetMotionChar(int dx, int dy) => (dx, dy) switch
+    {
+        (0, -1) => '⮉',
+        (0, 1) => '⮋',
+        (-1, 0) => '⮈',
+        (1, 0) => '⮊',
+        _ => '*'
+    };
 }

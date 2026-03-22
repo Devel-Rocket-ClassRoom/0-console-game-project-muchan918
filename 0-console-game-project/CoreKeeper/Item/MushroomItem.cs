@@ -9,6 +9,8 @@ public class MushroomItem : Item, IDroppable, IInventoryItem
     public int Count { get; set; } = 1;
     public int MaxStack => 10;
 
+    private const int k_HealAmount = 3;
+
     private readonly Map _map;
 
     public MushroomItem(Scene scene, Map map, int tileX, int tileY) : base(scene)
@@ -60,6 +62,8 @@ public class MushroomItem : Item, IDroppable, IInventoryItem
 
     public override void Use(Player player)
     {
-        throw new NotImplementedException();
+        if (player.Hp >= player.MaxHp) return;
+        player.Heal(k_HealAmount);
+        ConsumeFromInventory(player);
     }
 }

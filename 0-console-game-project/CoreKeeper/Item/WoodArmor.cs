@@ -9,8 +9,8 @@ public class WoodArmor : Item, IInventoryItem, IEquippable, ICraftable
 
     // IEquippable
     public EquipType EquipType => EquipType.Armor;
-    public void Equip(Player player) { }
-    public void Unequip(Player player) { }
+    public void Equip(Player player) { player.IncreaseMaxHp(10); }
+    public void Unequip(Player player) { player.DecreaseMaxHp(10); }
     public ConsoleColor Color => ConsoleColor.DarkYellow;
 
     // ICraftable

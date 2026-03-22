@@ -31,11 +31,11 @@ public class HpBar : GameObject
 
         // 배경 (빈 체력)
         for (int i = 0; i < totalCells; i++)
-            buffer.SetCell(sx + i, sy, '█', ConsoleColor.DarkRed, ConsoleColor.Black);
+            buffer.SetCell(sx + i, sy, '░', ConsoleColor.DarkRed, ConsoleColor.Black);
 
         // 채워진 체력
         for (int i = 0; i < filledCells; i++)
-            buffer.SetCell(sx + i, sy, '█', ConsoleColor.Red, ConsoleColor.Black);
+            buffer.SetCell(sx + i, sy, '█', ConsoleColor.DarkRed, ConsoleColor.Black);
 
         // HP 텍스트 (두 번째 행)
         string hpText = $"HP {_player.Hp}/{_player.MaxHp}";

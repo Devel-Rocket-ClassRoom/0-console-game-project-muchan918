@@ -15,9 +15,13 @@ public class Player : GameObject, IAttacker, IDefender
     private bool _actionReady = true;
 
     private (int X, int Y) _direction = (0, 0);
+    private (int X, int Y) _lastDirection = (0, 0);
 
     private readonly Map _map;
     public readonly Inventory Inventory;
+
+    private QuickSlot? _quickSlot;
+    public void SetQuickSlot(QuickSlot quickSlot) => _quickSlot = quickSlot;
 
     private (int X, int Y) _position;
     public (int X, int Y) Position => _position;
@@ -28,8 +32,33 @@ public class Player : GameObject, IAttacker, IDefender
 
     // IDefender
     public int MaxHp { get; private set; } = 20;
-    public int Hp { get; private set; } = 20;
+    public int Hp { get; private set; } = 10;
     public bool IsAlive => Hp > 0;
+
+    public void Heal(int amount) => Hp = Math.Min(Hp + amount, MaxHp);
+
+    public void IncreaseAttackDamage(int amount) => AttackDamage += amount;
+    public void DecreaseAttackDamage(int amount) => AttackDamage -= amount;
+
+    public void IncreaseMiningDamage(int amount) => MiningDamage += amount;
+    public void DecreaseMiningDamage(int amount) => MiningDamage -= amount;
+
+    public void IncreaseMaxHp(int amount) { MaxHp += amount; Hp += amount; }
+    public void DecreaseMaxHp(int amount) { MaxHp -= amount; Hp = Math.Min(Hp, MaxHp); }
+
+    public (int X, int Y) GetFrontTile() =>
+        (_position.X + _lastDirection.X, _position.Y + _lastDirection.Y);
+
+    public Map GetMap() => _map;
+
+    private char GetDefaultMotionChar(int dx, int dy) => (dx, dy) switch
+    {
+        (0, -1) => '⮉',
+        (0, 1) => '⮋',
+        (-1, 0) => '⮈',
+        (1, 0) => '⮊',
+        _ => '*'
+    };
 
     public Player(Scene scene, Map map, int startX, int startY) : base(scene)
     {
@@ -128,7 +157,15 @@ public class Player : GameObject, IAttacker, IDefender
         else if (Input.IsKey(ConsoleKey.A)) { dx = -1; }
         else if (Input.IsKey(ConsoleKey.D)) { dx = 1; }
 
+        if (Input.IsKeyDown(ConsoleKey.Spacebar))
+        {
+            var slot = _quickSlot?.GetSelectedSlot();
+            if (slot != null && !slot.IsEmpty)
+                slot.Item!.Use(this);
+        }
+
         _direction = (dx, dy);
+        if (_direction != (0, 0)) _lastDirection = _direction;
 
         // action 가능하면 방향키로 Action 
         if (_actionReady)
@@ -151,14 +188,21 @@ public class Player : GameObject, IAttacker, IDefender
         {
             _position = (nx, ny);
         }
-
-        return;
     }
 
     private void Action(int dx, int dy)
     {
         int targetX = _position.X + dx;
         int targetY = _position.Y + dy;
+
+        // 장착 무기가 IMotionable이면 이펙트 생성, 없으면 기본 이펙트
+        var weaponSlot = Inventory.Equipment.GetSlot(PlayerEquipment.EquipSlot.RightHand);
+        if (!weaponSlot.IsEmpty && weaponSlot.Item is IMotionable motionable)
+            Scene.AddGameObject(new AttackEffect(Scene, _map, targetX, targetY,
+                motionable.GetMotionChar(dx, dy), motionable.MotionColor));
+        else
+            Scene.AddGameObject(new AttackEffect(Scene, _map, targetX, targetY,
+                GetDefaultMotionChar(dx, dy), ConsoleColor.White));
 
         var defender = _scene!.FindDefender(targetX, targetY);
         if (defender != null)
@@ -177,11 +221,23 @@ public class Player : GameObject, IAttacker, IDefender
 
     private void Mine(int tileX, int tileY)
     {
-        TileType tileType = _map.GetTileType(tileX, tileY); // 먼저 타입 저장
-        bool broken = _map.MineTile(tileX, tileY, MiningDamage);
+        TileType tileType = _map.GetTileType(tileX, tileY);
+        var (broken, installedItem) = _map.MineTile(tileX, tileY, MiningDamage);
 
         if (broken)
         {
+            if (installedItem != null)
+            {
+                // IDroppable이면 좌표 설정 후 드랍
+                if (installedItem is IDroppable droppable)
+                {
+                    droppable.TileX = tileX;
+                    droppable.TileY = tileY;
+                }
+                Scene.AddGameObject(installedItem);
+                return;
+            }
+
             Item? item = tileType switch
             {
                 TileType.Wood => new WoodItem(Scene, _map, tileX, tileY),

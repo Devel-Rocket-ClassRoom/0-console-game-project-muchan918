@@ -26,6 +26,7 @@ public class PlayScene : Scene
 
         quickSlot = new QuickSlot(this, player.Inventory);
         AddGameObject(quickSlot);
+        player.SetQuickSlot(quickSlot);
 
         spawnManager = new SpawnManager(this, map);
         AddGameObject(spawnManager);

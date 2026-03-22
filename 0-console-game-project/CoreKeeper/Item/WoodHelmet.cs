@@ -9,8 +9,8 @@ public class WoodHelmet : Item, IInventoryItem, IEquippable, ICraftable
 
     // IEquippable
     public EquipType EquipType => EquipType.Helmet;
-    public void Equip(Player player) { }
-    public void Unequip(Player player) { }
+    public void Equip(Player player) { player.IncreaseMaxHp(5); }
+    public void Unequip(Player player) { player.DecreaseMaxHp(5); }
     public ConsoleColor Color => ConsoleColor.DarkYellow;
 
     // ICraftable

@@ -1,7 +1,7 @@
 ﻿using System;
 using Framework.Engine;
 
-public class Slime : Spawner, IAttacker, IDefender
+public class Slime : Spawner, IAttacker, IDefender, IChaseable
 {
     // static으로 전체 수량 관리
     public static int s_MaxCount = 80;
@@ -14,16 +14,29 @@ public class Slime : Spawner, IAttacker, IDefender
         s_CurrentCount++;
     }
 
+    // IAttacker
     public int AttackDamage { get; private set; } = 3;
 
+    // IDefender
     public int MaxHp { get; private set; } = 10;
     public int Hp { get; private set; } = 10;
     public bool IsAlive => Hp > 0;
 
+    // IChaseable
+    public float DetectRange => 8f;
+    public float MoveInterval => 0.5f;
+
+    // 이동 타이머
+    private float _moveTimer = 0f;
+
+    // 이전 위치 (넉백 방향 계산용)
+    private int _prevTileX;
+    private int _prevTileY;
+
     public void Attack(IDefender target)
     {
         target.TakeDamage(AttackDamage);
-    }              
+    }
 
     public override void Draw(ScreenBuffer buffer)
     {

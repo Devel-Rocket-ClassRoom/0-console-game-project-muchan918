@@ -63,6 +63,8 @@ public class StoneItem : Item, IDroppable, IInventoryItem
 
     public override void Use(Player player)
     {
-        throw new NotImplementedException();
+        var (tx, ty) = player.GetFrontTile();
+        player.GetMap().SetTile(tx, ty, TileType.Stone);
+        ConsumeFromInventory(player);
     }
 }

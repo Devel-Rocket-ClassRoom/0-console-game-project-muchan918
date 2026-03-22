@@ -1,7 +1,7 @@
 ﻿using System;
 using Framework.Engine;
 
-public class WoodPickaxe : Item, IInventoryItem, IEquippable, ICraftable
+public class WoodPickaxe : Item, IInventoryItem, IEquippable, ICraftable, IMotionable
 {
     // IInventoryItem
     public int Count { get; set; } = 1;
@@ -9,8 +9,8 @@ public class WoodPickaxe : Item, IInventoryItem, IEquippable, ICraftable
 
     // IEquippable
     public EquipType EquipType => EquipType.RightHand;
-    public void Equip(Player player) { }
-    public void Unequip(Player player) { }
+    public void Equip(Player player) { player.IncreaseMiningDamage(1); }
+    public void Unequip(Player player) { player.DecreaseMiningDamage(1); }
 
     // ICraftable
     public (string itemName, int count)[] Recipe => new[]
@@ -28,6 +28,8 @@ public class WoodPickaxe : Item, IInventoryItem, IEquippable, ICraftable
     public override void Use(Player player) { }
     public ConsoleColor Color => ConsoleColor.DarkYellow;
 
+    public ConsoleColor MotionColor => ConsoleColor.Cyan;
+
     public override void DrawIcon(int tx, int ty, ScreenBuffer buffer)
     {
         int sx = tx * 4;
@@ -38,4 +40,13 @@ public class WoodPickaxe : Item, IInventoryItem, IEquippable, ICraftable
         buffer.SetCell(sx + 1, sy + 1, '▕', ConsoleColor.DarkYellow, ConsoleColor.DarkGray);
         
     }
+
+    public char GetMotionChar(int dx, int dy) => (dx, dy) switch
+    {
+        (0, -1) => '⮉',
+        (0, 1) => '⮋',
+        (-1, 0) => '⮈',
+        (1, 0) => '⮊',
+        _ => '*'
+    };
 }

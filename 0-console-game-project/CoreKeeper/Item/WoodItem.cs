@@ -62,5 +62,10 @@ public class WoodItem : Item, IDroppable, IInventoryItem
         buffer.SetCell(sx + 2, sy + 1, '▀', ConsoleColor.DarkYellow, ConsoleColor.DarkGray);
     }
 
-    public override void Use(Player player) { }
+    public override void Use(Player player)
+    {
+        var (tx, ty) = player.GetFrontTile();
+        player.GetMap().SetTile(tx, ty, TileType.Wood);
+        ConsumeFromInventory(player);
+    }
 }
