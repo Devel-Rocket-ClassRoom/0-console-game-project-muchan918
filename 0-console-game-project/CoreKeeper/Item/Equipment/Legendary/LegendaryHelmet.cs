@@ -20,7 +20,7 @@ public class LegendaryHelmet : Item, IInventoryItem, IEquippable, IDroppable
 
     public LegendaryHelmet(Scene scene, Map map, int tileX, int tileY, int hpBonus) : base(scene)
     {
-        Name = "Phantom Crown";
+        Name = "Phantom Helmet";
         _map = map;
         TileX = tileX;
         TileY = tileY;
@@ -47,18 +47,18 @@ public class LegendaryHelmet : Item, IInventoryItem, IEquippable, IDroppable
         if (sx < 0 || sy < 0 || sx + 1 >= buffer.Width || sy + 1 >= buffer.Height) return;
 
         buffer.SetCell(sx + 1, sy, '★', ConsoleColor.Magenta, ConsoleColor.Black);
-        buffer.SetCell(sx + 2, sy, '♛', ConsoleColor.Magenta, ConsoleColor.Black);
-        buffer.SetCell(sx + 1, sy + 1, '▐', ConsoleColor.DarkMagenta, ConsoleColor.Black);
-        buffer.SetCell(sx + 2, sy + 1, '▌', ConsoleColor.DarkMagenta, ConsoleColor.Black);
+        buffer.SetCell(sx + 2, sy, ' ', ConsoleColor.Magenta, ConsoleColor.Black);
+        buffer.SetCell(sx + 1, sy + 1, '♛', ConsoleColor.Magenta, ConsoleColor.Black);
+        buffer.SetCell(sx + 2, sy + 1, ' ', ConsoleColor.Magenta, ConsoleColor.Black);
     }
 
     public override void DrawIcon(int tx, int ty, ScreenBuffer buffer)
     {
         int sx = tx * 4; int sy = ty * 2;
         buffer.SetCell(sx + 1, sy, '★', ConsoleColor.Magenta, ConsoleColor.DarkGray);
-        buffer.SetCell(sx + 2, sy, '♛', ConsoleColor.Magenta, ConsoleColor.DarkGray);
-        buffer.SetCell(sx + 1, sy + 1, '▐', ConsoleColor.DarkMagenta, ConsoleColor.DarkGray);
-        buffer.SetCell(sx + 2, sy + 1, '▌', ConsoleColor.DarkMagenta, ConsoleColor.DarkGray);
+        buffer.SetCell(sx + 2, sy, ' ', ConsoleColor.Magenta, ConsoleColor.DarkGray);
+        buffer.SetCell(sx + 1, sy + 1, '♛', ConsoleColor.Magenta, ConsoleColor.DarkGray);
+        buffer.SetCell(sx + 2, sy + 1, ' ', ConsoleColor.Magenta, ConsoleColor.DarkGray);
     }
 
     public override void Use(Player player) { }

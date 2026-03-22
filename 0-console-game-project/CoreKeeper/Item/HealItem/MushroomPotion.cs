@@ -1,12 +1,13 @@
 ﻿using System;
 using Framework.Engine;
 
-public class MushroomPotion : Item, IInventoryItem, ICraftable
+public class MushroomPotion : Item, IInventoryItem, ICraftable, IHealable
 {
     public int Count { get; set; } = 1;
     public int MaxStack => 10;
 
     private const int k_HealAmount = 15;
+    public int HealAmount => k_HealAmount;
 
     public (string itemName, int count)[] Recipe => new[] { ("Mushroom", 2), ("Wood", 1) };
     public string EffectDescription => "Instantly heals +15 HP";

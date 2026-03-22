@@ -1,7 +1,7 @@
 ﻿using System;
 using Framework.Engine;
 
-public class MushroomItem : Item, IDroppable, IInventoryItem
+public class MushroomItem : Item, IDroppable, IInventoryItem, IHealable
 {
     public int TileX { get; set; }
     public int TileY { get; set; }
@@ -10,6 +10,7 @@ public class MushroomItem : Item, IDroppable, IInventoryItem
     public int MaxStack => 10;
 
     private const int k_HealAmount = 3;
+    public int HealAmount => k_HealAmount;
 
     private readonly Map _map;
 

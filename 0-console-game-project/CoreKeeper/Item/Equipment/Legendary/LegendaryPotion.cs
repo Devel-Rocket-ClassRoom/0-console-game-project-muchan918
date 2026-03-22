@@ -1,20 +1,22 @@
 ﻿using System;
 using Framework.Engine;
 
-public class LegendaryPotion : Item, IInventoryItem, IDroppable
+public class LegendaryPotion : Item, IInventoryItem, IDroppable, IHealable
 {
     private readonly int _healAmount;
     private readonly Map _map;
 
+    public int HealAmount => _healAmount;
+
     public int Count { get; set; } = 1;
-    public int MaxStack => 5;
+    public int MaxStack => 1;
 
     public int TileX { get; set; }
     public int TileY { get; set; }
 
     public LegendaryPotion(Scene scene, Map map, int tileX, int tileY, int healAmount) : base(scene)
     {
-        Name = "Dragon Elixir";
+        Name = "Dragon Potion";
         _map = map;
         TileX = tileX;
         TileY = tileY;
@@ -48,7 +50,7 @@ public class LegendaryPotion : Item, IInventoryItem, IDroppable
         if (sx < 0 || sy < 0 || sx + 1 >= buffer.Width || sy + 1 >= buffer.Height) return;
 
         buffer.SetCell(sx + 1, sy, '★', ConsoleColor.DarkCyan, ConsoleColor.Black);
-        buffer.SetCell(sx + 2, sy, '░', ConsoleColor.DarkCyan, ConsoleColor.Black);
+        buffer.SetCell(sx + 2, sy, ' ', ConsoleColor.DarkCyan, ConsoleColor.Black);
         buffer.SetCell(sx + 1, sy + 1, '▓', ConsoleColor.DarkCyan, ConsoleColor.Black);
         buffer.SetCell(sx + 2, sy + 1, '▓', ConsoleColor.DarkCyan, ConsoleColor.Black);
     }
@@ -57,7 +59,7 @@ public class LegendaryPotion : Item, IInventoryItem, IDroppable
     {
         int sx = tx * 4; int sy = ty * 2;
         buffer.SetCell(sx + 1, sy, '★', ConsoleColor.DarkCyan, ConsoleColor.DarkGray);
-        buffer.SetCell(sx + 2, sy, '░', ConsoleColor.DarkCyan, ConsoleColor.DarkGray);
+        buffer.SetCell(sx + 2, sy, ' ', ConsoleColor.DarkCyan, ConsoleColor.DarkGray);
         buffer.SetCell(sx + 1, sy + 1, '▓', ConsoleColor.DarkCyan, ConsoleColor.DarkGray);
         buffer.SetCell(sx + 2, sy + 1, '▓', ConsoleColor.DarkCyan, ConsoleColor.DarkGray);
     }

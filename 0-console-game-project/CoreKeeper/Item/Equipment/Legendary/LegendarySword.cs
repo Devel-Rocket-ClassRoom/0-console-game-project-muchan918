@@ -61,18 +61,14 @@ public class LegendarySword : Item, IInventoryItem, IEquippable, IDroppable, IMo
         if (sx < 0 || sy < 0 || sx + 1 >= buffer.Width || sy + 1 >= buffer.Height) return;
 
         buffer.SetCell(sx + 1, sy, '★', ConsoleColor.Red, ConsoleColor.Black);
-        buffer.SetCell(sx + 2, sy, '/', ConsoleColor.Red, ConsoleColor.Black);
-        buffer.SetCell(sx + 1, sy + 1, '☌', ConsoleColor.DarkRed, ConsoleColor.Black);
-        buffer.SetCell(sx + 2, sy + 1, '✦', ConsoleColor.DarkRed, ConsoleColor.Black);
+        buffer.SetCell(sx + 1, sy + 1, '⚔', ConsoleColor.Red, ConsoleColor.Black);
     }
 
     public override void DrawIcon(int tx, int ty, ScreenBuffer buffer)
     {
         int sx = tx * 4; int sy = ty * 2;
         buffer.SetCell(sx + 1, sy, '★', ConsoleColor.Red, ConsoleColor.DarkGray);
-        buffer.SetCell(sx + 2, sy, '/', ConsoleColor.Red, ConsoleColor.DarkGray);
-        buffer.SetCell(sx + 1, sy + 1, '☌', ConsoleColor.DarkRed, ConsoleColor.DarkGray);
-        buffer.SetCell(sx + 2, sy + 1, '✦', ConsoleColor.DarkRed, ConsoleColor.DarkGray);
+        buffer.SetCell(sx + 1, sy + 1, '⚔', ConsoleColor.Red, ConsoleColor.DarkGray);
     }
 
     public override void Use(Player player) { }

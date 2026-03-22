@@ -176,7 +176,7 @@ public class WorkbenchUI : GameObject
             string recipeStr = string.Join(", ",
                 System.Linq.Enumerable.Select(craftable.Recipe, r => $"{r.itemName} x{r.count}"));
 
-            buffer.WriteTextCentered(4 * 2 + 1, $"Requires | {recipeStr}",
+            buffer.WriteTextCentered(7 * 2, $"Requires | {recipeStr}",
                 ConsoleColor.White, ConsoleColor.DarkGray);
 
             if (!string.IsNullOrEmpty(craftable.EffectDescription))

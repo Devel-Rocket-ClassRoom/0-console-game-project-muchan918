@@ -247,12 +247,15 @@ public class Inventory : GameObject
             var selectedItem = _slots[_selectedY, _selectedX];
             if (!selectedItem.IsEmpty && selectedItem.Item is IInventoryItem inv)
             {
-                buffer.WriteTextCentered(7 * 2 + 1,
+                buffer.WriteTextCentered(7 * 2,
                     $"{selectedItem.Item!.Name} x{inv.Count}", ConsoleColor.White, ConsoleColor.DarkGray);
 
                 if (selectedItem.Item is IEquippable equippable)
-                    buffer.WriteTextCentered(7 * 2, $"Stats | {equippable.Effect}",
+                    buffer.WriteTextCentered(7 * 2 + 1, $"Stats | {equippable.Effect}",
                         ConsoleColor.Yellow, ConsoleColor.DarkGray);
+                else if (selectedItem.Item is IHealable healable)
+                    buffer.WriteTextCentered(7 * 2 + 1, $"Heal +{healable.HealAmount}",
+                        ConsoleColor.Green, ConsoleColor.DarkGray);
             }
         }
     }
