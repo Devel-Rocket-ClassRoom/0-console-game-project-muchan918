@@ -10,6 +10,11 @@ public class PlayScene : Scene
     private HpBar hpBar;
     private WorkbenchUI workbenchUI;
     private BoxUI boxUI;
+    private Portal portal;
+
+    public event Action? BossSceneRequested;
+
+    public void RequestBossScene() => BossSceneRequested?.Invoke();
 
     public override void Draw(ScreenBuffer buffer)
     {
