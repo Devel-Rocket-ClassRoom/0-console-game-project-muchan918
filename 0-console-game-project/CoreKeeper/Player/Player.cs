@@ -1,7 +1,7 @@
 ﻿using System;
 using Framework.Engine;
 
-public class Player : GameObject, IAttacker, IDefender
+public class Player : GameObject, IAttacker, IDefender, IKnockbackable
 {
     private PlayScene? _scene;
 
@@ -16,6 +16,11 @@ public class Player : GameObject, IAttacker, IDefender
 
     private (int X, int Y) _direction = (0, 0);
     private (int X, int Y) _lastDirection = (0, 0);
+
+    // 피격 쿨타임
+    private float _invincibleTimer = 0f;
+    private const float k_InvincibleDuration = 1.5f;
+    public bool IsInvincible => _invincibleTimer > 0f;
 
     private readonly Map _map;
     public readonly Inventory Inventory;
@@ -32,7 +37,7 @@ public class Player : GameObject, IAttacker, IDefender
 
     // IDefender
     public int MaxHp { get; private set; } = 20;
-    public int Hp { get; private set; } = 10;
+    public int Hp { get; private set; } = 20;
     public bool IsAlive => Hp > 0;
 
     public void Heal(int amount) => Hp = Math.Min(Hp + amount, MaxHp);
@@ -120,6 +125,9 @@ public class Player : GameObject, IAttacker, IDefender
 
     public override void Update(float deltaTime)
     {
+        if (_invincibleTimer > 0f)
+            _invincibleTimer -= deltaTime;
+
         if (Input.IsKeyDown(ConsoleKey.Tab))
         {
             Inventory.Toggle();
@@ -208,6 +216,8 @@ public class Player : GameObject, IAttacker, IDefender
         if (defender != null)
         {
             Attack(defender);
+            if (defender is IKnockbackable knockbackable)
+                knockbackable.Knockback(dx, dy);
             return;
         }
 
@@ -216,7 +226,6 @@ public class Player : GameObject, IAttacker, IDefender
             Mine(targetX, targetY);
             return;
         }
-        // 추후 공격 등
     }
 
     private void Mine(int tileX, int tileY)
@@ -258,6 +267,20 @@ public class Player : GameObject, IAttacker, IDefender
 
     public void TakeDamage(int amount)
     {
+        if (IsInvincible) return;
         Hp = Math.Max(0, Hp - amount);
+        _invincibleTimer = k_InvincibleDuration;
+    }
+
+    // 넉백 - 방향으로 최대 2칸, Movable 체크
+    public void Knockback(int dx, int dy)
+    {
+        int nx = _position.X + dx;
+        int ny = _position.Y + dy;
+        if (_map.IsMovable(nx, ny)) _position = (nx, ny);
+
+        nx = _position.X + dx;
+        ny = _position.Y + dy;
+        if (_map.IsMovable(nx, ny)) _position = (nx, ny);
     }
 }
