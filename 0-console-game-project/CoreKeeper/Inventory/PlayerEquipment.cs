@@ -150,8 +150,14 @@ public class PlayerEquipment : GameObject
             string slotName = ((EquipSlot)_selectedIndex).ToString();
             var slot = _slots[_selectedIndex];
             string itemName = slot.IsEmpty ? "Empty" : slot.Item!.Name;
-            buffer.WriteTextCentered(7 * 2 + 1,
-                $"{slotName} | {itemName}", ConsoleColor.Yellow, ConsoleColor.DarkGray);
+
+            buffer.WriteTextCentered(7 * 2,
+                $"{slotName} | {itemName}", ConsoleColor.White, ConsoleColor.DarkGray);
+
+            // 스탯 정보 추가
+            if (!slot.IsEmpty && slot.Item is IEquippable equippable)
+                buffer.WriteTextCentered(7 * 2 + 1,
+                    $"Stats | {equippable.Effect}", ConsoleColor.Yellow, ConsoleColor.DarkGray);
         }
     }
 
