@@ -94,8 +94,17 @@ public class Boss : Spawner, IAttacker, IDefender
 
         if (_hitFlashTimer > 0f) _hitFlashTimer -= deltaTime;
 
-        // 교전 전이면 가만히
-        if (!_engaged) return;
+        // 교전 전이면 가만히 피 회복
+        if (!_engaged)
+        {
+            _healTimer += deltaTime;
+            if (_healTimer >= k_HealInterval)
+            {
+                _healTimer = 0f;
+                Hp = Math.Min(MaxHp, Hp + 5);
+            }
+            return;
+        }
 
         // 플레이어가 보스 구역 밖이면 귀환
         bool playerInArea = IsInBossArea(player.Position.X, player.Position.Y);
