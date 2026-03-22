@@ -237,6 +237,8 @@ public class Player : GameObject, IAttacker, IDefender, IKnockbackable
         {
             if (installedItem != null)
             {
+                Scene.RemoveGameObject(installedItem);
+
                 // IDroppable이면 좌표 설정 후 드랍
                 if (installedItem is IDroppable droppable)
                 {

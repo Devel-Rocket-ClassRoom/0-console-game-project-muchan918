@@ -1,7 +1,7 @@
 ﻿using System;
 using Framework.Engine;
 
-public class WorkbenchItem : Item, IInventoryItem, ICraftable, IDroppable, IInstallable
+public class BoxItem : Item, IInventoryItem, ICraftable, IDroppable, IInstallable, IInteractable
 {
     private Map? _map;
 
@@ -12,21 +12,21 @@ public class WorkbenchItem : Item, IInventoryItem, ICraftable, IDroppable, IInst
     // ICraftable
     public (string itemName, int count)[] Recipe => new[]
     {
-        ("Wood", 5)
+        ("Wood", 7)
     };
 
     // IDroppable
     public int TileX { get; set; }
     public int TileY { get; set; }
 
-    public WorkbenchItem(Scene scene) : base(scene)
+    public BoxItem(Scene scene) : base(scene)
     {
-        Name = "Workbench";
+        Name = "Box";
     }
 
-    public WorkbenchItem(Scene scene, Map map, int tileX, int tileY) : base(scene)
+    public BoxItem(Scene scene, Map map, int tileX, int tileY) : base(scene)
     {
-        Name = "Workbench";
+        Name = "Box";
         _map = map;
         TileX = tileX;
         TileY = tileY;
@@ -50,10 +50,10 @@ public class WorkbenchItem : Item, IInventoryItem, ICraftable, IDroppable, IInst
         var (sx, sy) = _map.TileToScreen(TileX, TileY, buffer);
         if (sx < 0 || sy < 0 || sx + 1 >= buffer.Width || sy + 1 >= buffer.Height) return;
 
-        buffer.SetCell(sx + 1, sy, '_', ConsoleColor.DarkYellow, ConsoleColor.Black);
-        buffer.SetCell(sx + 2, sy, '_', ConsoleColor.DarkYellow, ConsoleColor.Black);
-        buffer.SetCell(sx + 1, sy + 1, '▝', ConsoleColor.DarkYellow, ConsoleColor.Black);
-        buffer.SetCell(sx + 2, sy + 1, '▘', ConsoleColor.DarkYellow, ConsoleColor.Black);
+        buffer.SetCell(sx + 1, sy, '▛', ConsoleColor.DarkYellow, ConsoleColor.Black);
+        buffer.SetCell(sx + 2, sy, '▜', ConsoleColor.DarkYellow, ConsoleColor.Black);
+        buffer.SetCell(sx + 1, sy + 1, '▙', ConsoleColor.DarkYellow, ConsoleColor.Black);
+        buffer.SetCell(sx + 2, sy + 1, '▟', ConsoleColor.DarkYellow, ConsoleColor.Black);
     }
 
     public override void Use(Player player)
@@ -61,9 +61,9 @@ public class WorkbenchItem : Item, IInventoryItem, ICraftable, IDroppable, IInst
         var (tx, ty) = player.GetFrontTile();
         var map = player.GetMap();
 
-        // 설치 시 map과 좌표를 가진 새 인스턴스 생성해서 타일에 저장
-        var installed = new WorkbenchItem(Scene, map, tx, ty);
+        var installed = new BoxItem(Scene, map, tx, ty);
         map.SetTile(tx, ty, TileType.Object, installed);
+        Scene.AddGameObject(installed);
         ConsumeFromInventory(player);
     }
 
@@ -72,10 +72,10 @@ public class WorkbenchItem : Item, IInventoryItem, ICraftable, IDroppable, IInst
         int sx = tx * 4;
         int sy = ty * 2;
 
-        buffer.SetCell(sx + 1, sy, '_', ConsoleColor.DarkYellow, ConsoleColor.DarkGray);
-        buffer.SetCell(sx + 2, sy, '_', ConsoleColor.DarkYellow, ConsoleColor.DarkGray);
-        buffer.SetCell(sx + 1, sy + 1, '▝', ConsoleColor.DarkYellow, ConsoleColor.DarkGray);
-        buffer.SetCell(sx + 2, sy + 1, '▘', ConsoleColor.DarkYellow, ConsoleColor.DarkGray);
+        buffer.SetCell(sx + 1, sy, '▛', ConsoleColor.DarkYellow, ConsoleColor.DarkGray);
+        buffer.SetCell(sx + 2, sy, '▜', ConsoleColor.DarkYellow, ConsoleColor.DarkGray);
+        buffer.SetCell(sx + 1, sy + 1, '▙', ConsoleColor.DarkYellow, ConsoleColor.DarkGray);
+        buffer.SetCell(sx + 2, sy + 1, '▟', ConsoleColor.DarkYellow, ConsoleColor.DarkGray);
     }
 
     public void OnPickup(Player player)
@@ -89,9 +89,14 @@ public class WorkbenchItem : Item, IInventoryItem, ICraftable, IDroppable, IInst
         int sx = tx * 4;
         int sy = ty * 2;
 
-        buffer.SetCell(sx + 1, sy, '_', ConsoleColor.DarkYellow, ConsoleColor.Black);
-        buffer.SetCell(sx + 2, sy, '_', ConsoleColor.DarkYellow, ConsoleColor.Black);
-        buffer.SetCell(sx + 1, sy + 1, '▝', ConsoleColor.DarkYellow, ConsoleColor.Black);
-        buffer.SetCell(sx + 2, sy + 1, '▘', ConsoleColor.DarkYellow, ConsoleColor.Black);
+        buffer.SetCell(sx + 1, sy, '▛', ConsoleColor.DarkYellow, ConsoleColor.Black);
+        buffer.SetCell(sx + 2, sy, '▜', ConsoleColor.DarkYellow, ConsoleColor.Black);
+        buffer.SetCell(sx + 1, sy + 1, '▙', ConsoleColor.DarkYellow, ConsoleColor.Black);
+        buffer.SetCell(sx + 2, sy + 1, '▟', ConsoleColor.DarkYellow, ConsoleColor.Black);
+    }
+
+    public void Interact(Player player)
+    {
+        // 나중에 BoxUI 구현
     }
 }

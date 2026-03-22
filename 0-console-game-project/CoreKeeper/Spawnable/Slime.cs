@@ -88,6 +88,7 @@ public class Slime : Spawner, IAttacker, IDefender, IChaseable, IKnockbackable
         int dist = (int)MathF.Sqrt(distX * distX + distY * distY);
 
         if (dist > (int)DetectRange) return;
+        if (WearingSlimeHelmet(player)) return;
 
         // 이동 방향 계산
         int dx = Math.Sign(distX);
@@ -129,5 +130,11 @@ public class Slime : Spawner, IAttacker, IDefender, IChaseable, IKnockbackable
 
         TileX = nextX;
         TileY = nextY;
+    }
+
+    private bool WearingSlimeHelmet(Player player)
+    {
+        var slot = player.Inventory.Equipment.GetSlot(PlayerEquipment.EquipSlot.Helmet);
+        return !slot.IsEmpty && slot.Item is SlimeHelmet;
     }
 }

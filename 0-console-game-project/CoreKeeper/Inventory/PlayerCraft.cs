@@ -34,7 +34,7 @@ public class PlayerCraft : GameObject
         _slots[0, 0].SetItem(new WorkbenchItem(scene));
         _slots[0, 1].SetItem(new WoodHelmet(scene));
         _slots[0, 2].SetItem(new WoodArmor(scene));
-
+        _slots[1, 0].SetItem(new BoxItem(scene));
         _slots[1, 1].SetItem(new WoodSword(scene));
         _slots[1, 2].SetItem(new WoodPickaxe(scene));
     }
@@ -108,7 +108,7 @@ public class PlayerCraft : GameObject
             WorkbenchItem => new WorkbenchItem(Scene),
             WoodHelmet => new WoodHelmet(Scene),
             WoodArmor => new WoodArmor(Scene),
-
+            BoxItem => new BoxItem(Scene),
             WoodSword => new WoodSword(Scene),
             WoodPickaxe => new WoodPickaxe(Scene),
             _ => null!
