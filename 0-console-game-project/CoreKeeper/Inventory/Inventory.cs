@@ -149,6 +149,11 @@ public class Inventory : GameObject
             else
                 HandleSwap();
         }
+
+        if (Input.IsKeyDown(ConsoleKey.Q))
+        {
+            _slots[_selectedY, _selectedX].Clear();
+        }
     }
 
     private void HandleEquip()
@@ -258,6 +263,8 @@ public class Inventory : GameObject
                         ConsoleColor.Green, ConsoleColor.DarkGray);
             }
         }
+
+        buffer.WriteText(4 * 4, 4 * 2 + 1, "Drop : press Q", ConsoleColor.White, ConsoleColor.DarkGray);
     }
 
     // 맵과 동일한 방식 - 타일 1개를 스크린 4×2로 그리기
