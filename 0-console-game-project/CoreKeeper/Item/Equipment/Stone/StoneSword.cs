@@ -12,9 +12,11 @@ public class StoneSword : Item, IInventoryItem, IEquippable, ICraftable, IMotion
     public ConsoleColor Color => ConsoleColor.Gray;
     public void Equip(Player player) { player.IncreaseAttackDamage(8); }
     public void Unequip(Player player) { player.DecreaseAttackDamage(8); }
+    public string Effect => $"Attack +{8}";
 
     // ICraftable
-    public (string itemName, int count)[] Recipe => new[] { ("Stone", 3) };
+    public (string itemName, int count)[] Recipe => new[] { ("Stone", 4), ("Wood", 2) };
+    public string EffectDescription => "Attack +8";
 
     public ConsoleColor MotionColor => ConsoleColor.Gray;
     public char GetMotionChar(int dx, int dy) => (dx, dy) switch

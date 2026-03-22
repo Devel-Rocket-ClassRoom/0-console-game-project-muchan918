@@ -12,9 +12,11 @@ public class StoneArmor : Item, IInventoryItem, IEquippable, ICraftable
     public ConsoleColor Color => ConsoleColor.Gray;
     public void Equip(Player player) { player.IncreaseMaxHp(15); }
     public void Unequip(Player player) { player.DecreaseMaxHp(15); }
+    public string Effect => $"MaxHp +{15}";
 
     // ICraftable
-    public (string itemName, int count)[] Recipe => new[] { ("Stone", 6) };
+    public (string itemName, int count)[] Recipe => new[] { ("Stone", 8) };
+    public string EffectDescription => "MaxHp +15";
 
     public StoneArmor(Scene scene) : base(scene) { Name = "StoneArmor"; }
 

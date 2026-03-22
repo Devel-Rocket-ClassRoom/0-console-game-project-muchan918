@@ -14,6 +14,7 @@ public class BoxItem : Item, IInventoryItem, ICraftable, IDroppable, IInstallabl
     {
         ("Wood", 7)
     };
+    public string EffectDescription => "Allows storing items";
 
     // IDroppable
     public int TileX { get; set; }
@@ -97,6 +98,8 @@ public class BoxItem : Item, IInventoryItem, ICraftable, IDroppable, IInstallabl
 
     public void Interact(Player player)
     {
-        // 나중에 BoxUI 구현
+        var boxUI = player.Scene.FindGameObject("BoxUI") as BoxUI;
+        if (boxUI == null) return;
+        boxUI.Open();
     }
 }

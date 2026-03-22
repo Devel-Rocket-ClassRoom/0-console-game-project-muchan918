@@ -45,6 +45,7 @@ public class WorkbenchUI : GameObject
         _slots[0, 5].SetItem(new SlimeHelmet(scene));
 
         // 2행
+        _slots[1, 0].SetItem(new BoxItem(scene));
         _slots[1, 1].SetItem(new WoodSword(scene));
         _slots[1, 2].SetItem(new WoodPickaxe(scene));
         _slots[1, 3].SetItem(new StoneSword(scene));
@@ -118,6 +119,7 @@ public class WorkbenchUI : GameObject
             WoodArmor => new WoodArmor(Scene),
             WoodSword => new WoodSword(Scene),
             WoodPickaxe => new WoodPickaxe(Scene),
+            BoxItem => new BoxItem(Scene),
             StoneHelmet => new StoneHelmet(Scene),
             StoneArmor => new StoneArmor(Scene),
             StoneSword => new StoneSword(Scene),
@@ -135,18 +137,6 @@ public class WorkbenchUI : GameObject
     {
         _message = message;
         _messageTimer = k_MessageDuration;
-    }
-
-    private string BuildRecipeStr(ICraftable craftable)
-    {
-        var recipe = craftable.Recipe;
-        string result = "";
-        for (int i = 0; i < recipe.Length; i++)
-        {
-            if (i > 0) result += ", ";
-            result += $"{recipe[i].itemName} x{recipe[i].count}";
-        }
-        return result;
     }
 
     public override void Draw(ScreenBuffer buffer)
@@ -182,9 +172,17 @@ public class WorkbenchUI : GameObject
 
         var slot = _slots[_selectedY, _selectedX];
         if (!slot.IsEmpty && slot.Item is ICraftable craftable)
-            buffer.WriteTextCentered(7 * 2 + 1,
-                $"{slot.Item!.Name} | {BuildRecipeStr(craftable)}",
-                ConsoleColor.Yellow, ConsoleColor.DarkGray);
+        {
+            string recipeStr = string.Join(", ",
+                System.Linq.Enumerable.Select(craftable.Recipe, r => $"{r.itemName} x{r.count}"));
+
+            buffer.WriteTextCentered(4 * 2 + 1, $"Requires | {recipeStr}",
+                ConsoleColor.White, ConsoleColor.DarkGray);
+
+            if (!string.IsNullOrEmpty(craftable.EffectDescription))
+                buffer.WriteTextCentered(7 * 2 + 1, $"Stats | {craftable.EffectDescription}",
+                    ConsoleColor.Yellow, ConsoleColor.DarkGray);
+        }
     }
 
     private void DrawTile(ScreenBuffer buffer, int tx, int ty, char ch, ConsoleColor fg, ConsoleColor bg)

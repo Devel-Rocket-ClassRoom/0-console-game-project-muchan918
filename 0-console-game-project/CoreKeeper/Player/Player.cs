@@ -28,6 +28,12 @@ public class Player : GameObject, IAttacker, IDefender, IKnockbackable
     private QuickSlot? _quickSlot;
     public void SetQuickSlot(QuickSlot quickSlot) => _quickSlot = quickSlot;
 
+    private WorkbenchUI? _workbenchUI;
+    public void SetWorkbenchUI(WorkbenchUI workbenchUI) => _workbenchUI = workbenchUI;
+
+    private BoxUI? _boxUI;
+    public void SetBoxUI(BoxUI boxUI) => _boxUI = boxUI;
+
     private (int X, int Y) _position;
     public (int X, int Y) Position => _position;
 
@@ -134,6 +140,28 @@ public class Player : GameObject, IAttacker, IDefender, IKnockbackable
             return;
         }
 
+        if (Input.IsKeyDown(ConsoleKey.E))
+        {
+            if ((_workbenchUI != null && _workbenchUI.IsOpen) ||
+        (_boxUI != null && _boxUI.IsOpen))
+            {
+                _workbenchUI?.Close();
+                _boxUI?.Close();
+                _quickSlot!.IsActive = true;
+            }
+            else
+            {
+                var (tx, ty) = GetFrontTile();
+                var installed = _map.GetInstalledItem(tx, ty);
+                if (installed is IInteractable interactable)
+                {
+                    interactable.Interact(this);
+                    _quickSlot!.IsActive = false;
+                }
+            }
+            return;
+        }
+
         if (!_actionReady)
         {
             _actionTimer += deltaTime;
@@ -151,7 +179,8 @@ public class Player : GameObject, IAttacker, IDefender, IKnockbackable
             _moveTimer = 0;
         }
 
-        if (Inventory.IsOpen) return;
+        if (Inventory.IsOpen || (_workbenchUI != null && _workbenchUI.IsOpen)
+            || (_boxUI != null && _boxUI.IsOpen)) return;
 
         HandleInput();
     }

@@ -12,12 +12,14 @@ public class WoodSword : Item, IInventoryItem, IEquippable, ICraftable, IMotiona
     public void Equip(Player player) { player.IncreaseAttackDamage(5); }
     public void Unequip(Player player) { player.DecreaseAttackDamage(5); }
     public ConsoleColor Color => ConsoleColor.DarkYellow;
+    public string Effect => $"Attack +{5}";
 
     // ICraftable
     public (string itemName, int count)[] Recipe => new[]
     {
         ("Wood", 3)
     };
+    public string EffectDescription => "Attack +5";
 
     public ConsoleColor MotionColor => ConsoleColor.Yellow;
 

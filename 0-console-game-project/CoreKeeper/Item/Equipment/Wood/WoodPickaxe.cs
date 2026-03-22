@@ -11,12 +11,14 @@ public class WoodPickaxe : Item, IInventoryItem, IEquippable, ICraftable, IMotio
     public EquipType EquipType => EquipType.RightHand;
     public void Equip(Player player) { player.IncreaseMiningDamage(1); }
     public void Unequip(Player player) { player.DecreaseMiningDamage(1); }
+    public string Effect => $"Mining +{1}";
 
     // ICraftable
     public (string itemName, int count)[] Recipe => new[]
     {
         ("Wood", 3)
     };
+    public string EffectDescription => "Mining +1";
 
     public WoodPickaxe(Scene scene) : base(scene)
     {

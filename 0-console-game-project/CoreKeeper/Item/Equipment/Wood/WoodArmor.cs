@@ -12,12 +12,14 @@ public class WoodArmor : Item, IInventoryItem, IEquippable, ICraftable
     public void Equip(Player player) { player.IncreaseMaxHp(10); }
     public void Unequip(Player player) { player.DecreaseMaxHp(10); }
     public ConsoleColor Color => ConsoleColor.DarkYellow;
+    public string Effect => $"MaxHp +{10}";
 
     // ICraftable
     public (string itemName, int count)[] Recipe => new[]
     {
         ("Wood", 4)
     };
+    public string EffectDescription => "MaxHp +10";
 
     public WoodArmor(Scene scene) : base(scene)
     {

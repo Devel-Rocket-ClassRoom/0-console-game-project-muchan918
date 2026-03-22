@@ -9,11 +9,19 @@ public class PlayScene : Scene
     private SpawnManager spawnManager;
     private HpBar hpBar;
     private WorkbenchUI workbenchUI;
+    private BoxUI boxUI;
 
     public override void Draw(ScreenBuffer buffer)
     {
         DrawGameObjects(buffer);
-        player.Inventory.Draw(buffer);
+
+        if (workbenchUI.IsOpen)
+            workbenchUI.Draw(buffer);
+        else if (boxUI.IsOpen)
+            boxUI.Draw(buffer);
+        else
+            player.Inventory.Draw(buffer);
+
         buffer.DrawBox(0, 0, buffer.Width, buffer.Height, ConsoleColor.Yellow);
     }
 
@@ -40,8 +48,13 @@ public class PlayScene : Scene
         hpBar = new HpBar(this, player);
         AddGameObject(hpBar);
 
-        //workbenchUI = new WorkbenchUI(this, player.Inventory); 
-        //AddGameObject(workbenchUI);
+        workbenchUI = new WorkbenchUI(this, player.Inventory);
+        AddGameObject(workbenchUI);
+        player.SetWorkbenchUI(workbenchUI);
+
+        boxUI = new BoxUI(this, player.Inventory);
+        AddGameObject(boxUI);
+        player.SetBoxUI(boxUI);
     }
 
     public override void Unload()
@@ -54,8 +67,11 @@ public class PlayScene : Scene
         // Tab 처리 (PlayScene에서 관리)
         if (Input.IsKeyDown(ConsoleKey.Tab))
         {
-            player.Inventory.Toggle();
-            quickSlot.IsActive = !player.Inventory.IsOpen; // 인벤토리 열리면 QuickSlot 숨김
+            if (!workbenchUI.IsOpen && !boxUI.IsOpen)  // 추가
+            {
+                player.Inventory.Toggle();
+                quickSlot.IsActive = !player.Inventory.IsOpen;
+            }
             return;
         }
 

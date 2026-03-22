@@ -156,8 +156,13 @@ public class PlayerCraft : GameObject
             {
                 string recipeStr = string.Join(", ",
                     System.Linq.Enumerable.Select(craftable.Recipe, r => $"{r.itemName} x{r.count}"));
-                buffer.WriteTextCentered(7 * 2 + 1,
-                    $"{slot.Item!.Name} | {recipeStr}", ConsoleColor.Yellow, ConsoleColor.DarkGray);
+
+                buffer.WriteTextCentered(4 * 2 + 1, $"Requires | {recipeStr}",
+                    ConsoleColor.White, ConsoleColor.DarkGray);
+
+                if (!string.IsNullOrEmpty(craftable.EffectDescription))
+                    buffer.WriteTextCentered(7 * 2 + 1, $"Stats | {craftable.EffectDescription}",
+                        ConsoleColor.Yellow, ConsoleColor.DarkGray);
             }
         }    
     }

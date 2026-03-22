@@ -3,4 +3,5 @@
 public interface ICraftable
 {
     (string itemName, int count)[] Recipe {  get; }
+    string EffectDescription { get; }
 }

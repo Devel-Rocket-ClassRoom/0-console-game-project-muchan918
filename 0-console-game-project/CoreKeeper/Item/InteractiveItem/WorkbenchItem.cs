@@ -14,6 +14,7 @@ public class WorkbenchItem : Item, IInventoryItem, ICraftable, IDroppable, IInst
     {
         ("Wood", 5)
     };
+    public string EffectDescription => "Allows crafting of advanced items";
 
     // IDroppable
     public int TileX { get; set; }
@@ -98,6 +99,8 @@ public class WorkbenchItem : Item, IInventoryItem, ICraftable, IDroppable, IInst
 
     public void Interact(Player player)
     {
-        
+        var workbenchUI = player.Scene.FindGameObject("WorkbenchUI") as WorkbenchUI;
+        if (workbenchUI == null) return;
+        workbenchUI.Open();
     }
 }

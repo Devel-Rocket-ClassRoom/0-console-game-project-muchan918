@@ -6,6 +6,7 @@ public interface IEquippable
 {
     EquipType EquipType { get; }
     ConsoleColor Color { get; }
+    string Effect { get; }
     void Equip(Player player);
     void Unequip(Player player);
 }

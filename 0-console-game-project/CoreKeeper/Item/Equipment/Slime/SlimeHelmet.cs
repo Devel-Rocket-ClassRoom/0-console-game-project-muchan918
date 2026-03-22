@@ -12,9 +12,11 @@ public class SlimeHelmet : Item, IInventoryItem, IEquippable, ICraftable
     public ConsoleColor Color => ConsoleColor.Green;
     public void Equip(Player player) { player.IncreaseMaxHp(3); }
     public void Unequip(Player player) { player.DecreaseMaxHp(3); }
+    public string Effect => $"MaxHp +{3} | Slimes will not chase you";
 
     // ICraftable
-    public (string itemName, int count)[] Recipe => new[] { ("Slime", 5) };
+    public (string itemName, int count)[] Recipe => new[] { ("Slime", 5), ("WoodHelmet", 1) };
+    public string EffectDescription => "Slimes will not chase you | MaxHp +3";
 
     public SlimeHelmet(Scene scene) : base(scene) { Name = "SlimeHelmet"; }
 

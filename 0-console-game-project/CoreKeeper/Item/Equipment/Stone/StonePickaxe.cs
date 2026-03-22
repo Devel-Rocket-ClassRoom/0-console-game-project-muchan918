@@ -12,9 +12,11 @@ public class StonePickaxe : Item, IInventoryItem, IEquippable, ICraftable, IMoti
     public ConsoleColor Color => ConsoleColor.Gray;
     public void Equip(Player player) { player.IncreaseMiningDamage(2); }
     public void Unequip(Player player) { player.DecreaseMiningDamage(2); }
+    public string Effect => $"Mining +{2}";
 
     // ICraftable
-    public (string itemName, int count)[] Recipe => new[] { ("Stone", 3) };
+    public (string itemName, int count)[] Recipe => new[] { ("Stone", 4), ("Wood", 2) };
+    public string EffectDescription => "Mining +2";
 
     public StonePickaxe(Scene scene) : base(scene) { Name = "StonePickaxe"; }
 
