@@ -3,7 +3,7 @@ using Framework.Engine;
 
 public class SpawnerBox : Spawner, IDefender
 {
-    public static int s_MaxCount = 100;
+    public static int s_MaxCount = 50;
     public static int s_CurrentCount = 0;
 
     private static readonly Random _random = new Random();

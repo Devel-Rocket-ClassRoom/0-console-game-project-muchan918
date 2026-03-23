@@ -307,7 +307,7 @@ public class Boss : Spawner, IAttacker, IDefender
 
     public override void Draw(ScreenBuffer buffer)
     {
-        Console.Title = $"Boss=({TileX},{TileY}) State={_state} Engaged={_engaged}";
+        //Console.Title = $"Boss=({TileX},{TileY}) State={_state} Engaged={_engaged}";
 
         var (sx, sy) = GetScreenPos(buffer);
 
